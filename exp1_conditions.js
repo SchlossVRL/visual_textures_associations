@@ -1,0 +1,228 @@
+// var scale_list = {
+//   "0":["awful vs. nice", 
+//   "little vs. big", 
+//   "slow vs. fast",
+//   "sour vs. sweet",
+//   "powerless vs. poweful",
+//   "quiet vs. noisy"],
+//   "1":[
+//   "hellish vs. heavenly",
+//   "shallow vs. deep",
+//   "old vs. young",
+//   "bad vs. good",
+//   "weak vs. strong", 
+//   "dead vs. alive",
+//   ],
+//   "2":[
+//   "mild vs. harsh",
+//   "low vs. high",
+//   "unknown vs. known",
+//   "sad vs. happy",
+//   "short vs. long",
+//   "freezing vs. burning"
+//   ],
+// }
+// var scale_list = {
+// "0":[
+// "ugly vs. beautiful", 
+// "yellow vs. blue",
+// "hard vs. soft",
+// "dirty vs. clean", 
+// "agitated vs. calm", 
+// "distasteful vs. tasty"],
+// "1":[ 
+// "worthless vs. valuable", 
+// "red vs. green" ,
+// "cruel vs. kind" ,
+// "soft vs. loud" ,
+// "unpleasant vs. pleasant", 
+// "black vs. white" ],
+// "2":[
+// "bitter vs. sweet",
+// "dull vs. sharp" ,
+// "empty vs. full" ,
+// "ferocious vs. peaceful",
+// "light vs. heavy" ,
+// "dry vs. wet" ],
+// "3":[
+// "profane vs. sacred" ,
+// "tense vs. relaxed" ,
+// "cowardly vs. brave" ,
+// "poor vs. rich" ,
+// "hazy vs. clear" ,
+// "thin vs. thick" ],
+// "4":[
+// "dark vs. bright" ,
+// "treble vs. bass" ,
+// "rounded vs. angular", 
+// "foul vs. fragrant" ,
+// "passive vs. active" ,
+// "smooth vs. rough" ],
+// "5":[
+// "stale vs. fresh" ,
+// "unfair vs. fair" ,
+// "delicate vs. rugged", 
+// "bland vs. pungent" ,
+// "sick vs. healthy" ,
+// "narrow vs. wide"]
+// }
+
+
+
+
+var image_paths =['images/D1.png',
+'images/D4.png',
+'images/D8.png',
+'images/D11.png',
+'images/D14.png',
+'images/D16.png',
+'images/D17.png',
+'images/D18.png',
+'images/D19.png',
+'images/D20.png',
+'images/D22.png',
+'images/D25.png',
+'images/D26.png',
+'images/D34.png',
+'images/D35.png',
+'images/D36.png',
+'images/D37.png',
+'images/D46.png',
+'images/D47.png',
+'images/D48.png',
+'images/D49.png',
+'images/D51.png',
+'images/D52.png',
+'images/D53.png',
+'images/D55.png',
+'images/D56.png',
+'images/D57.png',
+'images/D64.png',
+'images/D65.png',
+'images/D66.png',
+'images/D68.png',
+'images/D74.png',
+'images/D75.png',
+'images/D76.png',
+'images/D77.png',
+'images/D78.png',
+'images/D79.png',
+'images/D81.png',
+'images/D82.png',
+'images/D83.png', 
+'images/D84.png',
+'images/D85.png',
+'images/D87.png',
+'images/D92.png',
+'images/D94.png',
+'images/D95.png',
+'images/D96.png',
+'images/D101.png',
+'images/D102.png',
+'images/D103.png',
+'images/D104.png',
+'images/D105.png',
+'images/D111.png',
+
+
+
+
+
+]
+var concept_conds = {
+  "0":[
+  'dress',
+  'pants',
+  'shirt',
+  'socks',
+  'shoes',],
+  "1":[ 
+  'blueberry',
+  'lemon',
+  'mango',
+  'strawberry',
+  'watermelon', ],
+  "2":[
+    'beach',
+    'field',
+    'ocean',
+    'sky',
+    'sunset' ],
+  "3":[
+  'angry',
+  'disgust',
+  'fearful',
+  'happy',
+  'sad', ],
+  "4":[
+    'above',
+    'below',
+    'beside',
+    'near',
+    'far', ],
+  "5":[
+  'dawn',
+  'day',
+  'dusk',
+  'night',
+  'noon'],
+  "6":[ 
+      'bear',
+  'bird',
+  'lion',
+  'frog',
+  'fish',],
+  "7":[
+    
+  'airplane',
+  'car',
+  'boat',
+  'truck',
+  'train',
+  ],
+  "8":[
+    'apple',
+    'banana',
+    'cherry',
+    'grape',
+    'peach',
+  ],
+
+  "9":[
+    'carrot',
+    'celery',
+    'corn',
+    'eggplant',
+    'mushroom',
+  ],
+  "10":[
+    'blizzard',
+    'drought',
+    'hurricane',
+    'lightning',
+    'sandstorm',
+  ],
+  "11":[
+    'evil',
+    'greed',
+    'justice',
+    'love',
+    'peace',
+  ],
+  "12":[
+    'driving',
+    'eating',
+    'sleeping',
+    'leisure',
+    'working',
+  ],
+  "13":[
+    'comfort',
+    'efficiency',
+    'speed',
+    'safety',
+    'reliability',
+  ],
+  }
+  
+  
