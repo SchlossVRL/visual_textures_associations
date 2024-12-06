@@ -381,7 +381,7 @@
                             // scale: this_scale,
                             concept: this_concept,
                             // image_path: this_map,
-                            // concept: concept,
+                            texture_id: this_image,
                             // repetition: repetition,
                             // map_id: this_map.match(/\d{2}(?=\.png)/)[0], //extracts the map id from the image path
                             // hue: im2cond_dict[this_map]['hue'],
@@ -447,9 +447,6 @@
             })
 
             timeline.push(debrief_script);
-
-
-
             jsPsych.run(timeline);
         }
 
