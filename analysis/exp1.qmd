@@ -1,0 +1,80 @@
+---
+title: "exp1"
+format: html
+editor: visual
+---
+
+### Load packages
+
+```{r}
+# List of packages
+packages <- c("corrr", "ggplot2", "lme4", "lmerTest", "FactoMineR", "grid","png","cowplot","magick", "ggimage","dplyr","tidyverse")
+
+
+```
+
+```{r}
+
+install_and_load_packages <- function(packages) {
+  for(package in packages) {
+    if(!require(package, character.only = TRUE)) {
+      install.packages(package, dependencies = TRUE)
+      library(package, character.only = TRUE)
+    }
+  }
+}
+
+# Call the function with the list of packages
+install_and_load_packages(packages)
+
+```
+
+## Set working directories
+
+```{r}
+current_dir<- getwd()
+
+data_dir <-paste0(current_dir,'/../data/')
+data_files <-list.files(path = data_dir, full.names = TRUE, pattern="*.csv")
+print(paste0('we have data from ',length(data_files),' participants'))
+
+```
+
+## Load in data and filter our texture ids
+
+```{r}
+
+df_list <- lapply(data_files, read.csv)
+
+experiment_data_raw<- bind_rows(df_list)
+ratings_trials<- experiment_data_raw %>% filter(trial_type== 'html-slider-response')
+ratings_trials_exp<- ratings_trials %>% filter(practiceTrial != 'true')
+
+ratings_trials_exp$response<- as.numeric(ratings_trials_exp$response)
+ratings_trials_exp$response<- (ratings_trials_exp$response + 200)/400
+
+
+
+extract_texture_id<-function(filename){
+  f<- str_split_i(filename,"/",2)
+  f<- str_split_i(f,".png",1)
+  return(f)
+  
+}
+
+ratings_trials_exp$texture <- lapply(ratings_trials_exp$texture_id,extract_texture_id)
+
+
+```
+
+## Group and pivot into a concept x texture matrix
+
+```{r}
+ratings_trial_grouped <- ratings_trials_exp %>% group_by(texture, concept) %>%summarise(mean_rating = mean(response)) 
+
+
+ratings_trials_grouped_wide<-ratings_trial_grouped %>%
+  pivot_wider(names_from = texture, values_from = mean_rating)
+
+ratings_trials_grouped_wide
+```
