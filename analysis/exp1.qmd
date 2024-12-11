@@ -65,6 +65,8 @@ extract_texture_id<-function(filename){
 ratings_trials_exp$texture <- lapply(ratings_trials_exp$texture_id,extract_texture_id)
 
 
+unique_sona_ids <- unique(ratings_trials_exp$sona_id)
+cat(paste(unique_sona_ids, collapse = ", "))
 ```
 
 ## Group and pivot into a concept x texture matrix
@@ -77,4 +79,11 @@ ratings_trials_grouped_wide<-ratings_trial_grouped %>%
   pivot_wider(names_from = texture, values_from = mean_rating)
 
 ratings_trials_grouped_wide
+```
+
+```{r}
+### compute matrix rank
+SVD <- svd(ratings_trials_grouped_wide[,2:ncol(ratings_trials_grouped_wide)])$d > 1e-10
+mat_rank <- sum(SVD)
+print(mat_rank)
 ```
