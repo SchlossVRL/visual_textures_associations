@@ -8,7 +8,7 @@ editor: visual
 
 ```{r}
 # List of packages
-packages <- c("corrr", "ggplot2", "lme4", "lmerTest", "FactoMineR", "grid","png","cowplot","magick", "ggimage","dplyr","tidyverse")
+packages <- c("corrr", "ggplot2", "lme4", "lmerTest", "FactoMineR", "grid","png","cowplot","magick", "ggimage","dplyr","tidyverse","knitr")
 
 
 ```
@@ -29,6 +29,16 @@ install_and_load_packages(packages)
 
 ```
 
+```         
+{r}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+```
+
 ## Set working directories
 
 ```{r}
@@ -37,6 +47,8 @@ current_dir<- getwd()
 data_dir <-paste0(current_dir,'/../data/')
 data_files <-list.files(path = data_dir, full.names = TRUE, pattern="*.csv")
 print(paste0('we have data from ',length(data_files),' participants'))
+
+
 
 ```
 
@@ -69,6 +81,12 @@ unique_sona_ids <- unique(ratings_trials_exp$sona_id)
 cat(paste(unique_sona_ids, collapse = ", "))
 ```
 
+```{r}
+t<-ratings_trials_exp %>%
+  group_by(condition_num) %>%
+  summarise(unique_subjects = n_distinct(subject_id))
+```
+
 ## Group and pivot into a concept x texture matrix
 
 ```{r}
@@ -86,4 +104,94 @@ ratings_trials_grouped_wide
 SVD <- svd(ratings_trials_grouped_wide[,2:ncol(ratings_trials_grouped_wide)])$d > 1e-10
 mat_rank <- sum(SVD)
 print(mat_rank)
+```
+
+```{r}
+
+
+bootstrap_associations_matrices<- function(ratings_df, sample_size){
+  
+  group1ids<- ratings_df %>%
+  group_by(condition_num) %>%
+  sample_n(sample_size,replace = TRUE)%>%select(subject_id)
+  
+  group2ids <- ratings_df %>%
+  # filter(!subject_id %in% group1ids$subject_id) %>%
+  group_by(condition_num) %>%
+  sample_n(sample_size, replace = TRUE) %>%
+  select(subject_id)
+  
+  group1df<-ratings_df%>%filter(subject_id%in%group1ids$subject_id)
+  group2df<-ratings_df%>%filter(subject_id%in%group2ids$subject_id)
+  
+  group1mat<- group1df%>% group_by(texture, concept) %>%summarise(mean_rating = mean(response),.groups='keep')%>%
+  pivot_wider(names_from = texture, values_from = mean_rating)
+  group2mat<- group2df%>% group_by(texture, concept) %>%summarise(mean_rating = mean(response),.groups='keep')%>%
+  pivot_wider(names_from = texture, values_from = mean_rating)
+  
+  group1mat <- group1mat[order(group1mat$concept), -1]  # Remove concept column
+  group2mat <- group2mat[order(group2mat$concept), -1]  # Remove concept column
+  
+  common_columns <- intersect(colnames(group1mat), colnames(group2mat))  # Find common columns
+  group1mat <- group1mat[, sort(common_columns)]
+  group2mat <- group2mat[, sort(common_columns)]
+  
+  
+  rowwise_correlations <- mapply(function(row1, row2) {
+    cor(row1, row2, use = "pairwise.complete.obs")
+  }, as.data.frame(t(group1mat)), as.data.frame(t(group2mat)))
+  
+  # Compute mean correlation
+  mean_correlation <- mean(rowwise_correlations, na.rm = TRUE)
+  
+  return(mean_correlation)
+
+  
+}
+
+
+
+```
+
+```{r}
+
+iters<-numeric()
+sample_sizes<-numeric()
+mean_rs<-numeric()
+for(iter in 1:100){
+for(sample_size in seq(5, 50, by = 5)){
+  mean_rs<- rbind(mean_rs,bootstrap_associations_matrices(ratings_trials_exp,sample_size))
+  iters<- rbind(iters, iter)
+  sample_sizes<-rbind(sample_sizes, sample_size)
+
+}
+}
+
+
+bootstrap_df <- data.frame(cbind( iters,sample_sizes,mean_rs
+))
+colnames(bootstrap_df)<- c('iteration','sample_size','mean_reliability')
+
+
+
+# Summarize data to calculate mean and standard error for each sample_size
+summary_results <- bootstrap_df %>%
+  group_by(sample_size) %>%
+  summarise(
+    mean_reliability = mean(mean_reliability, na.rm = TRUE),
+    se_reliability = sd(mean_reliability, na.rm = TRUE) / sqrt(n())
+  )
+
+# Create ggplot
+ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
+  geom_line(color = "blue") +
+  geom_ribbon(aes(ymin = mean_reliability - se_reliability,
+                  ymax = mean_reliability + se_reliability),
+              alpha = 0.8, fill = "blue") +
+  labs(
+    title = "Mean Reliability Across Sample Sizes",
+    x = "Sample Size",
+    y = "Mean Reliability"
+  ) +
+  theme_minimal()
 ```
