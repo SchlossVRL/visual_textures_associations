@@ -175,19 +175,20 @@ colnames(bootstrap_df)<- c('iteration','sample_size','mean_reliability')
 
 
 # Summarize data to calculate mean and standard error for each sample_size
-summary_results <- bootstrap_df %>%
-  group_by(sample_size) %>%
-  summarise(
-    mean_reliability = mean(mean_reliability, na.rm = TRUE),
-    se_reliability = sd(mean_reliability, na.rm = TRUE) / sqrt(n())
-  )
+summary_results <-bootstrap_df %>%
+    group_by(sample_size) %>%
+    summarise(
+        se_reliability = sd(mean_reliability, na.rm = TRUE) / sqrt(n()),
+        mean_reliability = mean(mean_reliability, na.rm = TRUE),
+       
+    )
 
 # Create ggplot
 ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
   geom_line(color = "blue") +
   geom_ribbon(aes(ymin = mean_reliability - se_reliability,
                   ymax = mean_reliability + se_reliability),
-              alpha = 0.8, fill = "blue") +
+              alpha = 0.1, fill = "red") +
   labs(
     title = "Mean Reliability Across Sample Sizes",
     x = "Sample Size",
