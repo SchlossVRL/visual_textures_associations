@@ -136,6 +136,7 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
   group1mat <- group1mat[, sort(common_columns)]
   group2mat <- group2mat[, sort(common_columns)]
   
+  ### @Anna lol could you just change things below so that we compute concept-wise correlations and return a dataframe of correlations for each concept
   
   rowwise_correlations <- mapply(function(row1, row2) {
     cor(row1, row2, use = "pairwise.complete.obs")
