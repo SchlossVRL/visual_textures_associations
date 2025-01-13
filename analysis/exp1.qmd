@@ -85,7 +85,10 @@ t<-ratings_trials_exp %>%
   group_by(condition_num) %>%
   summarise(unique_subjects = n_distinct(subject_id))
 
-
+concept_groups <- ratings_trials_exp %>% 
+  select(concept, condition_num) %>% 
+  distinct() %>% 
+  arrange(condition_num)
 ```
 
 ## Group and pivot into a concept x texture matrix
@@ -141,6 +144,8 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
   
   ### @Anna lol could you just change things below so that we compute concept-wise correlations and return a dataframe of correlations for each concept
   
+  ### @Kushin lol yes. I changed things so that the function returns a list with both the mean_correlation and the correlation_df (the correlation_df specifies the correlation value for each concept)
+  
   rowwise_correlations <- mapply(function(row1, row2) {
     cor(row1, row2, use = "pairwise.complete.obs")
   }, as.data.frame(t(group1mat)), as.data.frame(t(group2mat)))
@@ -164,7 +169,7 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
 ```
 
 ```{r}
-
+### @Kushin I updated the running code so that it works as before with the updated function 
 iters<-numeric()
 sample_sizes<-numeric()
 mean_rs<-numeric()
@@ -208,4 +213,7 @@ ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
     y = "Mean Reliability"
   ) +
   theme_minimal()
+```
+```{r}
+
 ```
