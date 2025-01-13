@@ -29,8 +29,7 @@ install_and_load_packages(packages)
 
 ```
 
-```         
-{r}
+```{r}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
@@ -85,6 +84,8 @@ cat(paste(unique_sona_ids, collapse = ", "))
 t<-ratings_trials_exp %>%
   group_by(condition_num) %>%
   summarise(unique_subjects = n_distinct(subject_id))
+
+
 ```
 
 ## Group and pivot into a concept x texture matrix
@@ -129,6 +130,8 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
   group2mat<- group2df%>% group_by(texture, concept) %>%summarise(mean_rating = mean(response),.groups='keep')%>%
   pivot_wider(names_from = texture, values_from = mean_rating)
   
+  concept_names <- group1mat$concept # Preserve concept names in correct order for later
+  
   group1mat <- group1mat[order(group1mat$concept), -1]  # Remove concept column
   group2mat <- group2mat[order(group2mat$concept), -1]  # Remove concept column
   
@@ -142,10 +145,16 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
     cor(row1, row2, use = "pairwise.complete.obs")
   }, as.data.frame(t(group1mat)), as.data.frame(t(group2mat)))
   
+  # Create dataframe of concept-wise correlations
+  correlation_df <- data.frame(
+    concept = concept_names,
+    correlation = rowwise_correlations
+  )
+  
   # Compute mean correlation
   mean_correlation <- mean(rowwise_correlations, na.rm = TRUE)
   
-  return(mean_correlation)
+  return(list(mean_correlation = mean_correlation, correlation_df = correlation_df))
 
   
 }
@@ -159,9 +168,12 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
 iters<-numeric()
 sample_sizes<-numeric()
 mean_rs<-numeric()
+correlation_dfs<-list()
 for(iter in 1:100){
 for(sample_size in seq(5, 50, by = 5)){
-  mean_rs<- rbind(mean_rs,bootstrap_associations_matrices(ratings_trials_exp,sample_size))
+  result <- bootstrap_associations_matrices(ratings_trials_exp, sample_size)
+  mean_rs <- rbind(mean_rs, result$mean_correlation)
+  correlation_dfs[[length(correlation_dfs) + 1]] <- result$correlation_df
   iters<- rbind(iters, iter)
   sample_sizes<-rbind(sample_sizes, sample_size)
 
@@ -184,7 +196,7 @@ summary_results <-bootstrap_df %>%
        
     )
 
-# Create ggplot
+# Create ggplots
 ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
   geom_line(color = "blue") +
   geom_ribbon(aes(ymin = mean_reliability - se_reliability,
