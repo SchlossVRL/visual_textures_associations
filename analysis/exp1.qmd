@@ -214,6 +214,68 @@ ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
   ) +
   theme_minimal()
 ```
-```{r}
 
+```{r}
+# Convert list of correlation_dfs to single data frame
+concept_correlation_data <- do.call(rbind, correlation_dfs)
+
+# Add sample sizes and iterations to the correlation data
+concept_correlation_data$sample_size <- rep(seq(5, 50, by = 5), each = 100 * length(concept_groups$concept))
+concept_correlation_data$iteration <- rep(1:100, times = length(seq(5, 50, by = 5)) * length(concept_groups$concept))
+
+# Add condition_num
+concept_correlation_data <- left_join(concept_correlation_data, concept_groups, by = "concept") %>% 
+  arrange(condition_num)
+
+# Summarize data for plotting: mean reliability and standard error per concept, condition_num, and sample_size
+summary_concept_results <- concept_correlation_data %>%
+  group_by(sample_size, condition_num, concept) %>%
+  summarise(
+    se_reliability = sd(correlation, na.rm = TRUE) / sqrt(n()),
+    mean_reliability = mean(correlation, na.rm = TRUE)
+  )
+
+# Plot
+# Custom Colors
+# Define your custom color palette
+custom_colors <- c(
+  "Concept1" = "#1f77b4",  # Blue
+  "Concept2" = "#ff7f0e",  # Orange
+  "Concept3" = "#2ca02c",  # Green
+  "Concept4" = "#d62728",  # Red
+  "Concept5" = "#9467bd"   # Purple
+)
+
+#ggplot
+ggplot(summary_concept_results, aes(x = sample_size, y = mean_reliability, color = concept)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = mean_reliability - se_reliability, ymax = mean_reliability + se_reliability, group = concept),
+              alpha = 0.1, fill = "red", color = NA) +
+  geom_text(
+    data = summary_concept_results %>%
+      group_by(condition_num, concept) %>%
+      filter(sample_size == max(sample_size)), # Place label at the largest sample size
+    aes(
+      x = sample_size,
+      y = mean_reliability,
+      label = concept
+    ),
+    hjust = -0.1, # Slightly offset the labels horizontally
+    vjust = 0, # Adjust vertical spacing
+    size = 3,
+    inherit.aes = FALSE # Avoid inheriting other plot aesthetics
+  ) +
+  labs(
+    title = "Mean Reliability Across Sample Sizes for Each Concept and Condition",
+    x = "Sample Size",
+    y = "Mean Reliability"
+  ) +
+  theme_minimal() +
+  facet_wrap(~ condition_num, ncol = 7) + 
+  theme(
+    legend.position = "none",
+    plot.margin = margin(50, 50, 50, 50),
+    panel.spacing = unit(3, "lines")) +
+  #scale_color_manual(values = custom_colors) +
+  coord_cartesian(clip = "off")
 ```
