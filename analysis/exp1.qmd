@@ -216,48 +216,75 @@ ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
 ```
 
 ```{r}
-# Convert list of correlation_dfs to single data frame
-concept_correlation_data <- do.call(rbind, correlation_dfs)
+# Now plots for individual concepts
 
-# Add sample sizes and iterations to the correlation data
-concept_correlation_data$sample_size <- rep(seq(5, 50, by = 5), each = 100 * length(concept_groups$concept))
-concept_correlation_data$iteration <- rep(1:100, times = length(seq(5, 50, by = 5)) * length(concept_groups$concept))
-
-# Add condition_num
-concept_correlation_data <- left_join(concept_correlation_data, concept_groups, by = "concept") %>% 
-  arrange(condition_num)
-
-# Summarize data for plotting: mean reliability and standard error per concept, condition_num, and sample_size
-summary_concept_results <- concept_correlation_data %>%
-  group_by(sample_size, condition_num, concept) %>%
-  summarise(
-    se_reliability = sd(correlation, na.rm = TRUE) / sqrt(n()),
-    mean_reliability = mean(correlation, na.rm = TRUE)
-  )
-
-# Plot
-# Custom Colors
-# Define your custom color palette
-custom_colors <- c(
-  "Concept1" = "#1f77b4",  # Blue
-  "Concept2" = "#ff7f0e",  # Orange
-  "Concept3" = "#2ca02c",  # Green
-  "Concept4" = "#d62728",  # Red
-  "Concept5" = "#9467bd"   # Purple
+# Combine all correlation data frames into one with iteration and sample size info
+correlation_summary_df <- bind_rows(
+  lapply(seq_along(correlation_dfs), function(i) {
+    cbind(
+      iteration = iters[i],
+      sample_size = sample_sizes[i],
+      correlation_dfs[[i]]
+    )
+  })
 )
 
+# Summarize data for each concept and sample size
+summary_correlation_results <- correlation_summary_df %>%
+  group_by(concept, sample_size) %>%
+  summarise(
+    mean_correlation = mean(correlation, na.rm = TRUE),
+    se_correlation = sd(correlation, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+# Add condition_num
+summary_correlation_results <- left_join(summary_correlation_results, concept_groups, by = "concept") %>% 
+  arrange(condition_num)
+
+#OLD Incorrect
+# # Convert list of correlation_dfs to single data frame
+# concept_correlation_data <- do.call(rbind, correlation_dfs)
+# 
+# # Add sample sizes and iterations to the correlation data
+# concept_correlation_data$sample_size <- rep(seq(5, 100, by = 5), each = 50 * length(concept_groups$concept))
+# concept_correlation_data$iteration <- rep(1:100, times = length(seq(5, 50, by = 5)) * length(concept_groups$concept))
+# 
+# # Add condition_num
+# concept_correlation_data <- left_join(concept_correlation_data, concept_groups, by = "concept") %>% 
+#   arrange(condition_num)
+# 
+# # Summarize data for plotting: mean reliability and standard error per concept, condition_num, and sample_size
+# summary_concept_results <- concept_correlation_data %>%
+#   group_by(sample_size, condition_num, concept) %>%
+#   summarise(
+#     se_reliability = sd(correlation, na.rm = TRUE) / sqrt(n()),
+#     mean_reliability = mean(correlation, na.rm = TRUE)
+#   )
+
+# Plot
+# # Custom Colors
+# # Define your custom color palette
+# custom_colors <- c(
+#   "Concept1" = "#1f77b4",  # Blue
+#   "Concept2" = "#ff7f0e",  # Orange
+#   "Concept3" = "#2ca02c",  # Green
+#   "Concept4" = "#d62728",  # Red
+#   "Concept5" = "#9467bd"   # Purple
+# )
+
 #ggplot
-ggplot(summary_concept_results, aes(x = sample_size, y = mean_reliability, color = concept)) +
+ggplot(summary_correlation_results, aes(x = sample_size, y = mean_correlation, color = concept)) +
   geom_line() +
-  geom_ribbon(aes(ymin = mean_reliability - se_reliability, ymax = mean_reliability + se_reliability, group = concept),
+  geom_ribbon(aes(ymin = mean_correlation - se_correlation, ymax = mean_correlation + se_correlation, group = concept),
               alpha = 0.1, fill = "red", color = NA) +
   geom_text(
-    data = summary_concept_results %>%
+    data = summary_correlation_results %>%
       group_by(condition_num, concept) %>%
       filter(sample_size == max(sample_size)), # Place label at the largest sample size
     aes(
       x = sample_size,
-      y = mean_reliability,
+      y = mean_correlation,
       label = concept
     ),
     hjust = -0.1, # Slightly offset the labels horizontally
