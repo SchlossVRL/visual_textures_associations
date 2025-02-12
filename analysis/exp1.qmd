@@ -90,6 +90,7 @@ concept_groups <- ratings_trials_exp %>%
   distinct() %>% 
   arrange(condition_num)
 ```
+
 ```{r}
 colnames(t) <- c("condition_num", "unique_subjects")
 t2 <- as.data.frame(t)
@@ -114,7 +115,6 @@ SVD <- svd(ratings_trials_grouped_wide[,2:ncol(ratings_trials_grouped_wide)])$d 
 mat_rank <- sum(SVD)
 print(mat_rank)
 ```
-
 
 ```{r}
 
@@ -213,7 +213,7 @@ ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
               alpha = 0.1, fill = "red") +
   labs(
     title = "Mean Reliability Across Sample Sizes",
-    x = "Sample Size",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2",
     y = "Mean Reliability"
   ) +
   theme_minimal()
@@ -275,7 +275,7 @@ ggplot(summary_correlation_results, aes(x = sample_size, y = mean_correlation, c
   ) +
   labs(
     title = "Mean Reliability Across Sample Sizes for Each Concept and Condition",
-    x = "Sample Size",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2)",
     y = "Mean Reliability"
   ) +
   theme_minimal() +
@@ -290,11 +290,11 @@ ggplot(summary_correlation_results, aes(x = sample_size, y = mean_correlation, c
 
 ```{r}
 #split half correlations for current sample size
-compute_correlations <- function(ratings_df, t2, condition_nums, n_iterations = 1000) {
-  all_correlation_results <- vector("list", length(condition_nums) * n_iterations)
+compute_correlations <- function(ratings_df, t2, condition_num, n_iterations = 1000) {
+  all_correlation_results <- vector("list", length(condition_num) * n_iterations)
   counter <- 1  # To track the list index
   
-  for (condition in condition_nums) {
+  for (condition in condition_num) {
     for (i in 1:n_iterations) {
       # Randomly split subjects into two groups
       group1ids <- ratings_df %>%
@@ -434,7 +434,7 @@ ggplot(boostrapping_w_split_half, aes(x = sample_size, y = mean_correlation, col
   ) +
   labs(
     title = "Mean Reliability Across Sample Sizes for Each Concept and Condition",
-    x = "Sample Size",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2)",
     y = "Mean Reliability"
   ) +
   theme_minimal() +
@@ -446,4 +446,139 @@ ggplot(boostrapping_w_split_half, aes(x = sample_size, y = mean_correlation, col
   #scale_color_manual(values = custom_colors) +
   coord_cartesian(clip = "off")
 
+```
+```{r}
+#estimating data stability using split half correlations of current data
+compute_all_split_correlations <- function(ratings_df, t2, condition_nums, n_iterations) {
+  all_correlation_results <- list()
+  counter <- 1  # To track the list index
+  
+  for (condition in condition_nums) {
+    max_size <- t2 %>% filter(condition_num == condition) %>% pull(unique_subjects) / 2
+    
+    for (subsample_size in 1:max_size) {  # Iterate over different sample sizes
+      for (i in 1:n_iterations) {
+        # Randomly select subsample_size subjects for each group
+        group1ids <- ratings_df %>%
+          filter(condition_num == condition) %>%
+          sample_n(subsample_size, replace = FALSE) %>%
+          select(subject_id)
+        
+        group2ids <- ratings_df %>%
+          filter(condition_num == condition) %>%
+          filter(!subject_id %in% group1ids$subject_id) %>%
+          sample_n(subsample_size, replace = FALSE) %>%
+          select(subject_id)
+        
+        # Create data matrices for both groups
+        group1df <- ratings_df %>% filter(subject_id %in% group1ids$subject_id)
+        group2df <- ratings_df %>% filter(subject_id %in% group2ids$subject_id)
+        
+        group1mat <- group1df %>%
+          group_by(texture, concept) %>%
+          summarise(mean_rating = mean(response), .groups = 'keep') %>%
+          pivot_wider(names_from = texture, values_from = mean_rating)
+        
+        group2mat <- group2df %>%
+          group_by(texture, concept) %>%
+          summarise(mean_rating = mean(response), .groups = 'keep') %>%
+          pivot_wider(names_from = texture, values_from = mean_rating)
+        
+        # Align matrices
+        concept_names <- group1mat$concept
+        group1mat <- group1mat[order(group1mat$concept), -1]  # Remove concept column
+        group2mat <- group2mat[order(group2mat$concept), -1]  # Remove concept column
+        
+        common_columns <- intersect(colnames(group1mat), colnames(group2mat))
+        group1mat <- group1mat[, sort(common_columns)]
+        group2mat <- group2mat[, sort(common_columns)]
+        
+        # Compute correlations
+        rowwise_correlations <- mapply(
+          function(row1, row2) cor(row1, row2, use = "pairwise.complete.obs"),
+          as.data.frame(t(group1mat)), as.data.frame(t(group2mat))
+        )
+        
+        # Store results
+        all_correlation_results[[counter]] <- data.frame(
+          iteration = i,
+          condition_num = condition,
+          sample_size = subsample_size,  # Store subsample size
+          concept = concept_names,
+          correlation = rowwise_correlations
+        )
+        
+        counter <- counter + 1  # Increment index
+      }
+    }
+  }
+  
+  # Combine all results into a single data frame
+  return(bind_rows(all_correlation_results))
+}
+
+# Get unique condition numbers from ratings_df
+condition_nums <- unique(ratings_trials_exp$condition_num)
+
+library(progressr)
+handlers("progress")
+
+# Run the function
+all_split_results <- compute_all_split_correlations(ratings_trials_exp, t2, condition_nums, n_iterations = 1000)
+```
+
+```{r}
+#Plot Split half correlations
+
+# Summarize data for each concept and sample size
+summarize_split_halves <- all_split_results %>%
+  group_by(concept, sample_size) %>%
+  summarise(
+    mean_correlation = mean(correlation, na.rm = TRUE),
+    se_correlation = sd(correlation, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+summarize_split_halves <- left_join(summarize_split_halves, concept_groups, by = "concept") %>% 
+  arrange(condition_num)
+
+#ggplot
+ggplot(summarize_split_halves, aes(x = sample_size, y = mean_correlation, color = concept)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = mean_correlation - se_correlation, ymax = mean_correlation + se_correlation, group = concept),
+              alpha = 0.1, fill = "red", color = NA) +
+  geom_text(
+    data = summarize_split_halves %>%
+      group_by(condition_num, concept) %>%
+      filter(sample_size == max(sample_size)), # Place label at the largest sample size
+    aes(
+      x = sample_size,
+      y = mean_correlation,
+      label = concept
+    ),
+    hjust = -0.1, # Slightly offset the labels horizontally
+    vjust = 0, # Adjust vertical spacing
+    size = 3,
+    inherit.aes = FALSE # Avoid inheriting other plot aesthetics
+  ) +
+  # Add vertical lines for current sample sizes from `t2`
+  geom_vline(
+    data = t2,
+    aes(xintercept = unique_subjects/2), 
+    linetype = "dashed", 
+    color = "black"
+  ) +
+  labs(
+    title = "Mean Reliability Across Sample Sizes for Each Concept and Condition",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2)",
+    y = "Mean Reliability"
+  ) +
+  theme_minimal() +
+  facet_wrap(~ condition_num, ncol = 7) + 
+  theme(
+    legend.position = "none",
+    plot.margin = margin(50, 50, 50, 50),
+    panel.spacing = unit(3, "lines")) +
+  #scale_color_manual(values = custom_colors) +
+  coord_cartesian(clip = "off")
 ```
