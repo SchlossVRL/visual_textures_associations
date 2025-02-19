@@ -76,6 +76,13 @@ extract_texture_id<-function(filename){
 
 ratings_trials_exp$texture <- lapply(ratings_trials_exp$texture_id,extract_texture_id)
 
+#read in key for condition_num
+concept_condition_num <- read_csv("/Users/annachinni/Documents/GitHub/visual_textures_associations/analysis/../groups/concept_groups.csv")
+#reset condition_num
+ratings_trials_exp <- ratings_trials_exp %>%
+  select(-condition_num) %>%  # Remove old condition_num
+  left_join(concept_condition_num, by = "concept")  # Merge based on concepts
+
 
 unique_sona_ids <- unique(ratings_trials_exp$sona_id)
 cat(paste(unique_sona_ids, collapse = ", "))
