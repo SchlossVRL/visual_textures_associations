@@ -151,8 +151,8 @@ crop_image <- function(image_path, output_dir) {
   height <- img_info$height
 
   # Define crop size (adjust as needed, e.g., center 50% of the image)
-  crop_width <- floor(0.1 * width)
-  crop_height <- floor(0.25 * height)
+  crop_width <- floor(0.04 * width)
+  crop_height <- floor(0.15 * height)
 
   # Crop the image (centered)
   cropped_img <- image_crop(img, geometry = paste0(crop_width, "x", crop_height, "+", floor(0.25 * width), "+", floor(0.25 * height)))
@@ -274,7 +274,7 @@ for (concept in unique_concepts) {
   plot <- ggplot(concept_data, aes(x = texture, y = AverageRatings)) +
   geom_image(aes(image = cropped_texture_id, y = -0.1), size = 0.05) +  # Place images under bars
   geom_bar(stat = "identity", fill = "white", color = "black", size = 0.1) +
-  labs(title = "Average Association Ratings by Texture",
+  labs(title = paste("Average Association Ratings for", concept),
        x = "Texture",
        y = "Average Rating") +
   scale_fill_identity() + 
