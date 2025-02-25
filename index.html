@@ -60,16 +60,12 @@
             let assigned_condition;
             if (condition_num >= 0 && condition_num <= 3) {
                 assigned_condition = 3;
-            } else if (condition_num >= 4 && condition_num <= 5) {
+            } else if (condition_num >= 4 && condition_num <= 8) {
                 assigned_condition = 4;
-            } else if (condition_num >= 6 && condition_num <= 7) {
+            } else if (condition_num >= 9 && condition_num <= 11) {
                 assigned_condition = 5;
-            } else if (condition_num >= 8 && condition_num <= 9) {
-                assigned_condition = 10;
-            } else if (condition_num >= 10 && condition_num <= 11) {
-                assigned_condition = 11;
             } else if (condition_num >= 12 && condition_num <= 14) {
-                assigned_condition = 12;
+                assigned_condition = 10;
             } else {
                 console.error("Unexpected condition number:", condition_num);
             }
