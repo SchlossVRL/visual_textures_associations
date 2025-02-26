@@ -104,6 +104,11 @@
                 choices: ['Begin Experiment']
             }
             timeline.push(initial_screen);
+            let preload_trial = {
+                type: jsPsychPreload,
+                images: image_paths
+            }
+            timeline.push(preload_trial);
 
             timeline.push({
                 type: jsPsychFullscreen,
