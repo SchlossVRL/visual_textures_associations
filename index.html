@@ -54,12 +54,12 @@
 
             const filename = `${subject_id}.csv`;
 
-            const condition_num = await jsPsychPipe.getCondition("Rn56BHzIriFm");
+            const condition_num = await jsPsychPipe.getCondition("711Sy98ZMvOS");
             // const condition_num = 0;
 
             //Limit conditions run
 
-            // Map condition_num to one of the three conditions
+            /*// Map condition_num to one of the three conditions
             let assigned_condition;
             if (condition_num >= 0 && condition_num <= 3) {
                 assigned_condition = 3;
@@ -75,11 +75,11 @@
 
             // Use the assigned condition number to get the concept list
             concept_list = concept_conds[assigned_condition];
-            concept_list = jsPsych.randomization.shuffle(concept_list);
+            concept_list = jsPsych.randomization.shuffle(concept_list);*/
 
             //ALL conditions
-            //concept_list = concept_conds[condition_num]
-            //concept_list = jsPsych.randomization.shuffle(concept_list);
+            concept_list = concept_conds[condition_num]
+            concept_list = jsPsych.randomization.shuffle(concept_list);
 
 
 
@@ -447,7 +447,7 @@
             const save_data = {
                 type: jsPsychPipe,
                 action: "save",
-                experiment_id: "Rn56BHzIriFm",
+                experiment_id: "711Sy98ZMvOS",
                 filename: filename,
                 data_string: () => jsPsych.data.get().csv()
             };
