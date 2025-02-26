@@ -344,16 +344,17 @@
             timeline.push(practice_complete);
 
 
-            
-            var block_break0 = {
-                type: jsPsychHtmlButtonResponse,
-                stimulus: "<p>In this block of trials, you will be asked to rate how much you associate each texture with the concept</p > " +
-                    "<p style = 'font-size:150%; font-weight: bold'>" + concept_list[0] + "</p><br></br>",
-                choices: ['Continue'],
-            };
-            timeline.push(block_break0);
-            trial_block = [];
+
+
             for (j = 0; j < concept_list.length; j++) {
+                var block_break0 = {
+                    type: jsPsychHtmlButtonResponse,
+                    stimulus: "<p>In this block of trials, you will be asked to rate how much you associate each texture with the concept</p > " +
+                        "<p style = 'font-size:150%; font-weight: bold'>" + concept_list[j] + "</p><br></br>",
+                    choices: ['Continue'],
+                };
+                timeline.push(block_break0);
+                trial_block = [];
                 for (i = 0; i < Object.keys(image_paths).length; i++) {
                     this_image = image_paths[i];
 
