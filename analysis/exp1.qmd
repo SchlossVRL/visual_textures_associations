@@ -8,7 +8,7 @@ editor: visual
 
 ```{r}
 # List of packages
-packages <- c("corrr", "ggplot2", "lme4", "lmerTest", "FactoMineR", "grid","png","cowplot","magick", "ggimage","dplyr","tidyverse","knitr")
+packages <- c("corrr", "ggplot2", "lme4", "lmerTest", "FactoMineR", "grid","png","cowplot","magick", "ggimage","dplyr","tidyverse","knitr", "tidytext", "forcats")
 
 
 ```
@@ -29,8 +29,7 @@ install_and_load_packages(packages)
 
 ```
 
-```         
-{r}
+```{r}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
@@ -44,6 +43,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```{r}
 current_dir<- getwd()
 
+image_dir <- paste0(current_dir, "/../images/")
 data_dir <-paste0(current_dir,'/../data/')
 data_files <-list.files(path = data_dir, full.names = TRUE, pattern="*.csv")
 print(paste0('we have data from ',length(data_files),' participants'))
@@ -76,6 +76,13 @@ extract_texture_id<-function(filename){
 
 ratings_trials_exp$texture <- lapply(ratings_trials_exp$texture_id,extract_texture_id)
 
+#read in key for condition_num
+concept_condition_num <- read_csv("/Users/annachinni/Documents/GitHub/visual_textures_associations/analysis/../groups/concept_groups.csv")
+#reset condition_num
+ratings_trials_exp <- ratings_trials_exp %>%
+  select(-condition_num) %>%  # Remove old condition_num
+  left_join(concept_condition_num, by = "concept")  # Merge based on concepts
+
 
 unique_sona_ids <- unique(ratings_trials_exp$sona_id)
 cat(paste(unique_sona_ids, collapse = ", "))
@@ -85,6 +92,17 @@ cat(paste(unique_sona_ids, collapse = ", "))
 t<-ratings_trials_exp %>%
   group_by(condition_num) %>%
   summarise(unique_subjects = n_distinct(subject_id))
+
+concept_groups <- ratings_trials_exp %>% 
+  select(concept, condition_num) %>% 
+  distinct() %>% 
+  arrange(condition_num)
+```
+
+```{r}
+colnames(t) <- c("condition_num", "unique_subjects")
+t2 <- as.data.frame(t)
+
 ```
 
 ## Group and pivot into a concept x texture matrix
@@ -106,8 +124,438 @@ mat_rank <- sum(SVD)
 print(mat_rank)
 ```
 
-```{r}
+#Plotting
 
+```{r}
+#texture paths
+texture_paths <- ratings_trials_exp %>% 
+  select(texture, texture_id) %>% 
+  distinct()
+
+texture_paths <- texture_paths %>%
+  mutate(texture_id = file.path(image_dir, basename(texture_id)))
+
+#setting up images for plotting 
+# Define output directory for cropped images
+output_dir <- paste0(current_dir, "/../cropped_images/")
+dir.create(output_dir, showWarnings = FALSE)  # Create directory if doesn't exist 
+
+# Function to crop an image
+crop_image <- function(image_path, output_dir) {
+  # Read image
+  img <- image_read(image_path)
+  
+  # Get image dimensions
+  img_info <- image_info(img)
+  width <- img_info$width
+  height <- img_info$height
+
+  # Define crop size (adjust as needed, e.g., center 50% of the image)
+  crop_width <- floor(0.04 * width)
+  crop_height <- floor(0.15 * height)
+
+  # Crop the image (centered)
+  cropped_img <- image_crop(img, geometry = paste0(crop_width, "x", crop_height, "+", floor(0.25 * width), "+", floor(0.25 * height)))
+
+  # Define new filename
+  new_filename <- file.path(output_dir, basename(image_path))
+
+  # Save cropped image
+  image_write(cropped_img, new_filename)
+  
+  return(new_filename)
+}
+
+# Apply cropping to all texture images
+texture_paths <- texture_paths %>%
+  mutate(cropped_texture_id = sapply(texture_id, crop_image, output_dir = output_dir))
+```
+
+```{r}
+#add to main data frame
+ratings_trials_exp <- left_join(ratings_trials_exp, texture_paths, by = "texture")
+
+#prep plotting data
+#averages data
+averages <- ratings_trials_exp %>% 
+  group_by(concept, texture, cropped_texture_id) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+averages$texture <- sapply(averages$texture, as.character)
+averages$texture <- as.factor(averages$texture)
+
+#data for hill plots
+averages_hills <- averages %>% 
+  group_by(concept) %>% 
+  arrange(AverageRatings, .by_group = TRUE) %>% 
+  mutate(texture = reorder_within(texture, AverageRatings, concept)) %>% 
+  ungroup()
+```
+
+# Peaky Plots
+
+```{r}
+#plot
+ggplot(averages, aes(x = texture, y = AverageRatings)) +
+  geom_image(aes(image = cropped_texture_id, y = -0.1), size = 0.05) +  # Place images under bars
+  geom_bar(stat = "identity", fill = "white", color = "black", size = 0.1) +
+  facet_wrap(~ concept) +
+  labs(title = "Average Association Ratings by Texture",
+       x = "Texture",
+       y = "Average Rating") +
+  scale_fill_identity() +  
+  theme_minimal() +
+  #scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  #scale_y_continuous(limits = c(-0.1, 1), expand = c(0, 0)) +  # Adjust y-axis for images
+  scale_y_continuous(
+    limits = c(-0.2, 1),  # Lower limit for images
+    expand = c(0, 0),  
+    sec.axis = dup_axis()  # Forces axis to stay at y = 0
+  ) +
+  # Add a manual x-axis at y = 0
+  geom_hline(yintercept = 0, color = "black", size = 0.8) +  # This is now your x-axis
+  theme(
+    axis.line.y = element_line(color = "black"),
+    axis.text.x = element_blank(),
+    panel.background = element_blank(),   
+    panel.grid.major = element_blank(),      
+    panel.grid.minor = element_blank(),      
+    plot.background = element_blank()
+  )
+```
+
+
+# Hill Plots
+```{r}
+#plot
+ggplot(averages_hills, aes(x = texture, y = AverageRatings)) +
+  geom_image(aes(image = cropped_texture_id, y = -0.1), size = 0.05) +  # Place images under bars
+  geom_bar(stat = "identity", fill = "white", color = "black", size = 0.1) +
+  facet_wrap(~ concept, scales = "free_x") +
+  labs(title = "Average Association Ratings by Texture",
+       x = "Texture",
+       y = "Average Rating") +
+  scale_fill_identity() + 
+  scale_x_reordered() +
+  theme_minimal() +
+  #scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(-0.1, 1), expand = c(0, 0)) +  # Adjust y-axis for images
+  scale_y_continuous(
+    limits = c(-0.2, 1),  # Lower limit for images
+    expand = c(0, 0),  
+    sec.axis = dup_axis()  # Forces axis to stay at y = 0
+  ) +
+  # Add a manual x-axis at y = 0
+  geom_hline(yintercept = 0, color = "black", size = 0.8) +  # This is now your x-axis
+  theme(
+    #axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    axis.text.x = element_blank(),
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_blank()
+  )
+```
+
+# Individual Plots
+```{r}
+# Set absolute path for the output folder
+plot_output_dir <- "/../plots"
+dir.create(plot_output_dir, showWarnings = FALSE)  # Create directory if doesn't exist 
+
+unique_concepts <- unique(averages_hills$concept)
+
+for (concept in unique_concepts) {
+  # filter to current concept
+  concept_data <- averages_hills %>%  filter(concept == !!concept)
+  
+  #create plot
+  plot <- ggplot(concept_data, aes(x = texture, y = AverageRatings)) +
+  geom_image(aes(image = cropped_texture_id, y = -0.1), size = 0.05) +  # Place images under bars
+  geom_bar(stat = "identity", fill = "white", color = "black", size = 0.1) +
+  labs(title = paste("Average Association Ratings for", concept),
+       x = "Texture",
+       y = "Average Rating") +
+  scale_fill_identity() + 
+  theme_minimal() +
+  #scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(-0.1, 1), expand = c(0, 0)) +  # Adjust y-axis for images
+  scale_y_continuous(
+    limits = c(-0.2, 1),  # Lower limit for images
+    expand = c(0, 0),  
+    sec.axis = dup_axis()  # Forces axis to stay at y = 0
+  ) +
+  # Add a manual x-axis at y = 0
+  geom_hline(yintercept = 0, color = "black", size = 0.8) +  # This is now your x-axis
+  theme(
+    #axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    axis.text.x = element_blank(),
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_blank()
+  )
+  
+  
+  #save plot to a file
+  file_name <- paste0("hill_plot_", gsub("[^a-zA-Z0-9]", "_", concept), ".pdf")
+  file_path <- file.path(plot_output_dir, file_name)  # Save inside the specified folder
+  
+  #save the plot
+  ggsave(filename = file_name, plot = plot, width = 8, height = 4)
+}
+
+# Print confirmation message
+print(paste0("Plots saved to: ", plot_output_dir))
+
+```
+
+# Doubles
+
+```{r}
+#semantic distance function 
+get_semantic_distance <- function(concept1, concept2) {
+  # Helper function for calculating the standard deviation
+  sig <- function(xi) {
+    return(max(1.4 * xi * (1 - xi), 0.1))
+  }
+  
+  # Extract values from input vectors
+  x1 <- concept1[1]
+  x2 <- concept1[2]
+  x3 <- concept2[1]
+  x4 <- concept2[2]
+  
+  # Calculate semantic distance
+  num <- (x1 + x4) - (x2 + x3)
+  denom <- sqrt(sig(x1)^2 + sig(x2)^2 + sig(x3)^2 + sig(x4)^2)
+  prob_dx_gt_zero <- pnorm(num / denom)
+  prob_dx_lt_zero <- 1 - prob_dx_gt_zero
+  semantic_distance <- abs(prob_dx_gt_zero - prob_dx_lt_zero)
+  
+  # Global assignment (1 = outer vs. 0 = inner edges)
+  assignDiff <- (x1 + x4) - (x2 + x3)
+  if (assignDiff > 0) {
+    assign <- 1
+  } else if (assignDiff < 0) {
+    assign <- 0
+  } else {
+    assign <- NA
+  }
+  
+  return(list(semantic_distance = semantic_distance, assign = assign))
+}
+```
+```{r}
+#practice with fruits and vegetables
+```
+```{r}
+#practice with animals
+animals <- ratings_trials_exp %>% 
+  filter(concept == c("lion", "bird", "frog", "fish", "bear")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+animal_concepts <- unique(animals_long$concept)
+animal_concept_pairs <- combn(animal_concepts, 2, simplify = FALSE) 
+
+animals_reshaped <- animals %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a list to store results
+semantic_distances <- list()
+
+# Loop through each concept pair
+for (pair in animal_concept_pairs) {
+  # Loop through each combination of two textures
+  for (texture1 in unique(animals_reshaped$texture)) {
+    for (texture2 in unique(animals_reshaped$texture)) {
+      
+      # Extract ratings for Concept1 with Texture1 (x1) and Concept2 with Texture2 (x3)
+      concept1_rating_texture1 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[1]])  # x1
+      concept2_rating_texture2 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[2]])  # x3
+      
+      # Extract ratings for Concept2 with Texture1 (x2) and Concept1 with Texture2 (x4)
+      concept2_rating_texture1 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[2]])  # x2
+      concept1_rating_texture2 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[1]])  # x4
+
+      # Make sure all ratings are valid (non-empty)
+      if (length(concept1_rating_texture1) > 0 && length(concept2_rating_texture2) > 0 &&
+          length(concept2_rating_texture1) > 0 && length(concept1_rating_texture2) > 0) {
+        
+        # Calculate semantic distance for the set of two concepts and two textures
+        result <- get_semantic_distance(
+          c(concept1_rating_texture1, concept2_rating_texture2),  # (x1, x3)
+          c(concept2_rating_texture1, concept1_rating_texture2)   # (x2, x4)
+        )
+        
+        # Store the result in the list with the pair of concepts and both textures
+        semantic_distances[[paste(pair[1], "vs", pair[2], texture1, "and", texture2)]] <- result$semantic_distance
+      }
+    }
+  }
+}
+
+# Convert the list of results into a data frame
+results_df <- data.frame(
+  concept_pair = names(semantic_distances),
+  semantic_distance = unlist(semantic_distances)
+)
+
+# View the output
+head(results_df)
+```
+
+
+# Rating Stability
+
+```{r}
+#estimating data stability using split half correlations of current data
+compute_all_split_correlations <- function(ratings_df, t2, condition_nums, n_iterations) {
+  all_correlation_results <- list()
+  counter <- 1  # To track the list index
+  
+  for (condition in condition_nums) {
+    max_size <- t2 %>% filter(condition_num == condition) %>% pull(unique_subjects) / 2
+    
+    for (subsample_size in 1:max_size) {  # Iterate over different sample sizes
+      for (i in 1:n_iterations) {
+        # Randomly select subsample_size subjects for each group
+        group1ids <- ratings_df %>%
+          filter(condition_num == condition) %>%
+          sample_n(subsample_size, replace = FALSE) %>%
+          select(subject_id)
+        
+        group2ids <- ratings_df %>%
+          filter(condition_num == condition) %>%
+          filter(!subject_id %in% group1ids$subject_id) %>%
+          sample_n(subsample_size, replace = FALSE) %>%
+          select(subject_id)
+        
+        # Create data matrices for both groups
+        group1df <- ratings_df %>% filter(subject_id %in% group1ids$subject_id)
+        group2df <- ratings_df %>% filter(subject_id %in% group2ids$subject_id)
+        
+        group1mat <- group1df %>%
+          group_by(texture, concept) %>%
+          summarise(mean_rating = mean(response), .groups = 'keep') %>%
+          pivot_wider(names_from = texture, values_from = mean_rating)
+        
+        group2mat <- group2df %>%
+          group_by(texture, concept) %>%
+          summarise(mean_rating = mean(response), .groups = 'keep') %>%
+          pivot_wider(names_from = texture, values_from = mean_rating)
+        
+        # Align matrices
+        concept_names <- group1mat$concept
+        group1mat <- group1mat[order(group1mat$concept), -1]  # Remove concept column
+        group2mat <- group2mat[order(group2mat$concept), -1]  # Remove concept column
+        
+        common_columns <- intersect(colnames(group1mat), colnames(group2mat))
+        group1mat <- group1mat[, sort(common_columns)]
+        group2mat <- group2mat[, sort(common_columns)]
+        
+        # Compute correlations
+        rowwise_correlations <- mapply(
+          function(row1, row2) cor(row1, row2, use = "pairwise.complete.obs"),
+          as.data.frame(t(group1mat)), as.data.frame(t(group2mat))
+        )
+        
+        # Store results
+        all_correlation_results[[counter]] <- data.frame(
+          iteration = i,
+          condition_num = condition,
+          sample_size = subsample_size,  # Store subsample size
+          concept = concept_names,
+          correlation = rowwise_correlations
+        )
+        
+        counter <- counter + 1  # Increment index
+      }
+    }
+  }
+  
+  # Combine all results into a single data frame
+  return(bind_rows(all_correlation_results))
+}
+
+# Get unique condition numbers from ratings_df
+condition_nums <- unique(ratings_trials_exp$condition_num)
+
+library(progressr)
+handlers("progress")
+
+# Run the function
+all_split_results <- compute_all_split_correlations(ratings_trials_exp, t2, condition_nums, n_iterations = 1000) 
+```
+
+```{r}
+#Plot Split half correlations
+
+# Summarize data for each concept and sample size
+summarize_split_halves <- all_split_results %>%
+  group_by(concept, sample_size) %>%
+  summarise(
+    mean_correlation = mean(correlation, na.rm = TRUE),
+    se_correlation = sd(correlation, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+summarize_split_halves <- left_join(summarize_split_halves, concept_groups, by = "concept") %>% 
+  arrange(condition_num)
+
+#ggplot
+ggplot(summarize_split_halves, aes(x = sample_size, y = mean_correlation, color = concept)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = mean_correlation - se_correlation, ymax = mean_correlation + se_correlation, group = concept),
+              alpha = 0.1, fill = "red", color = NA) +
+  geom_text(
+    data = summarize_split_halves %>%
+      group_by(condition_num, concept) %>%
+      filter(sample_size == max(sample_size)), # Place label at the largest sample size
+    aes(
+      x = sample_size,
+      y = mean_correlation,
+      label = concept
+    ),
+    hjust = -0.1, # Slightly offset the labels horizontally
+    vjust = 0, # Adjust vertical spacing
+    size = 3,
+    inherit.aes = FALSE # Avoid inheriting other plot aesthetics
+  ) +
+  # Add vertical lines for current sample sizes from `t2`
+  geom_vline(
+    data = t2,
+    aes(xintercept = unique_subjects/2), 
+    linetype = "dashed", 
+    color = "black"
+  ) +
+  labs(
+    title = "Mean Reliability Across Sample Sizes for Each Concept and Condition",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2)",
+    y = "Mean Reliability"
+  ) +
+  theme_minimal() +
+  facet_wrap(~ condition_num, ncol = 7) + 
+  theme(
+    legend.position = "none",
+    plot.margin = margin(50, 50, 50, 50),
+    panel.spacing = unit(3, "lines")) +
+  #scale_color_manual(values = custom_colors) +
+  coord_cartesian(clip = "off")
+```
+
+
+
+
+
+
+
+# Bootstrapping Stuff (if wanted)
+```{r}
 
 bootstrap_associations_matrices<- function(ratings_df, sample_size){
   
@@ -129,6 +577,8 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
   group2mat<- group2df%>% group_by(texture, concept) %>%summarise(mean_rating = mean(response),.groups='keep')%>%
   pivot_wider(names_from = texture, values_from = mean_rating)
   
+  concept_names <- group1mat$concept # Preserve concept names in correct order for later
+  
   group1mat <- group1mat[order(group1mat$concept), -1]  # Remove concept column
   group2mat <- group2mat[order(group2mat$concept), -1]  # Remove concept column
   
@@ -138,30 +588,40 @@ bootstrap_associations_matrices<- function(ratings_df, sample_size){
   
   ### @Anna lol could you just change things below so that we compute concept-wise correlations and return a dataframe of correlations for each concept
   
+  ### @Kushin lol yes. I changed things so that the function returns a list with both the mean_correlation and the correlation_df (the correlation_df specifies the correlation value for each concept)
+  
   rowwise_correlations <- mapply(function(row1, row2) {
     cor(row1, row2, use = "pairwise.complete.obs")
   }, as.data.frame(t(group1mat)), as.data.frame(t(group2mat)))
   
+  # Create dataframe of concept-wise correlations
+  correlation_df <- data.frame(
+    concept = concept_names,
+    correlation = rowwise_correlations
+  )
+  
   # Compute mean correlation
   mean_correlation <- mean(rowwise_correlations, na.rm = TRUE)
   
-  return(mean_correlation)
+  return(list(mean_correlation = mean_correlation, correlation_df = correlation_df))
 
   
 }
 
 
-
 ```
 
 ```{r}
-
+### @Kushin I updated the running code so that it works as before with the updated function 
 iters<-numeric()
 sample_sizes<-numeric()
 mean_rs<-numeric()
-for(iter in 1:100){
-for(sample_size in seq(5, 50, by = 5)){
-  mean_rs<- rbind(mean_rs,bootstrap_associations_matrices(ratings_trials_exp,sample_size))
+correlation_dfs<-list()
+for(iter in 1:1000){
+for(sample_size in seq(5, 80, by = 5)){
+  result <- bootstrap_associations_matrices(ratings_trials_exp, sample_size)
+  mean_rs <- rbind(mean_rs, result$mean_correlation)
+  correlation_dfs[[length(correlation_dfs) + 1]] <- result$correlation_df
   iters<- rbind(iters, iter)
   sample_sizes<-rbind(sample_sizes, sample_size)
 
@@ -184,7 +644,7 @@ summary_results <-bootstrap_df %>%
        
     )
 
-# Create ggplot
+# Create ggplot - this is for overall data - not seperated by group and concept
 ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
   geom_line(color = "blue") +
   geom_ribbon(aes(ymin = mean_reliability - se_reliability,
@@ -192,8 +652,237 @@ ggplot(summary_results, aes(x = sample_size, y = mean_reliability)) +
               alpha = 0.1, fill = "red") +
   labs(
     title = "Mean Reliability Across Sample Sizes",
-    x = "Sample Size",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2",
     y = "Mean Reliability"
   ) +
   theme_minimal()
+```
+
+```{r}
+# Now plots for individual concepts
+
+# Combine all correlation data frames into one with iteration and sample size info
+correlation_summary_df <- bind_rows(
+  lapply(seq_along(correlation_dfs), function(i) {
+    cbind(
+      iteration = iters[i],
+      sample_size = sample_sizes[i],
+      correlation_dfs[[i]]
+    )
+  })
+)
+
+# Summarize data for each concept and sample size
+summary_correlation_results <- correlation_summary_df %>%
+  group_by(concept, sample_size) %>%
+  summarise(
+    mean_correlation = mean(correlation, na.rm = TRUE),
+    se_correlation = sd(correlation, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+# Add condition_num
+summary_correlation_results <- left_join(summary_correlation_results, concept_groups, by = "concept") %>% 
+  arrange(condition_num)
+
+
+#ggplot
+ggplot(summary_correlation_results, aes(x = sample_size, y = mean_correlation, color = concept)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = mean_correlation - se_correlation, ymax = mean_correlation + se_correlation, group = concept),
+              alpha = 0.1, fill = "red", color = NA) +
+  geom_text(
+    data = summary_correlation_results %>%
+      group_by(condition_num, concept) %>%
+      filter(sample_size == max(sample_size)), # Place label at the largest sample size
+    aes(
+      x = sample_size,
+      y = mean_correlation,
+      label = concept
+    ),
+    hjust = -0.1, # Slightly offset the labels horizontally
+    vjust = 0, # Adjust vertical spacing
+    size = 3,
+    inherit.aes = FALSE # Avoid inheriting other plot aesthetics
+  ) +
+  # Add vertical lines for current sample sizes from `t2`
+  geom_vline(
+    data = t2,
+    aes(xintercept = unique_subjects/2), 
+    linetype = "dashed", 
+    color = "black"
+  ) +
+  labs(
+    title = "Mean Reliability Across Sample Sizes for Each Concept and Condition",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2)",
+    y = "Mean Reliability"
+  ) +
+  theme_minimal() +
+  facet_wrap(~ condition_num, ncol = 7) + 
+  theme(
+    legend.position = "none",
+    plot.margin = margin(50, 50, 50, 50),
+    panel.spacing = unit(3, "lines")) +
+  #scale_color_manual(values = custom_colors) +
+  coord_cartesian(clip = "off")
+```
+
+```{r}
+#split half correlations for current sample size
+compute_correlations <- function(ratings_df, t2, condition_num, n_iterations = 1000) {
+  all_correlation_results <- vector("list", length(condition_num) * n_iterations)
+  counter <- 1  # To track the list index
+  
+  for (condition in condition_num) {
+    for (i in 1:n_iterations) {
+      # Randomly split subjects into two groups
+      group1ids <- ratings_df %>%
+        filter(condition_num == condition) %>%
+        sample_n(t2 %>% filter(condition_num == condition) %>% pull(unique_subjects) / 2, replace = FALSE) %>%
+        select(subject_id)
+      
+      group2ids <- ratings_df %>%
+        filter(condition_num == condition) %>%
+        filter(!subject_id %in% group1ids$subject_id) %>%
+        sample_n(t2 %>% filter(condition_num == condition) %>% pull(unique_subjects) / 2, replace = FALSE) %>%
+        select(subject_id)
+      
+      # Create data matrices for both groups
+      group1df <- ratings_df %>% filter(subject_id %in% group1ids$subject_id)
+      group2df <- ratings_df %>% filter(subject_id %in% group2ids$subject_id)
+      
+      group1mat <- group1df %>%
+        group_by(texture, concept) %>%
+        summarise(mean_rating = mean(response), .groups = 'keep') %>%
+        pivot_wider(names_from = texture, values_from = mean_rating)
+      
+      group2mat <- group2df %>%
+        group_by(texture, concept) %>%
+        summarise(mean_rating = mean(response), .groups = 'keep') %>%
+        pivot_wider(names_from = texture, values_from = mean_rating)
+      
+      # Align matrices
+      concept_names <- group1mat$concept
+      group1mat <- group1mat[order(group1mat$concept), -1]  # Remove concept column
+      group2mat <- group2mat[order(group2mat$concept), -1]  # Remove concept column
+      
+      common_columns <- intersect(colnames(group1mat), colnames(group2mat))
+      group1mat <- group1mat[, sort(common_columns)]
+      group2mat <- group2mat[, sort(common_columns)]
+      
+      # Compute correlations
+      rowwise_correlations <- mapply(
+        function(row1, row2) cor(row1, row2, use = "pairwise.complete.obs"),
+        as.data.frame(t(group1mat)), as.data.frame(t(group2mat))
+      )
+      
+      # Store results
+      all_correlation_results[[counter]] <- data.frame(
+        iteration = i,
+        condition_num = condition,
+        concept = concept_names,
+        correlation = rowwise_correlations
+      )
+      
+      counter <- counter + 1  # Increment index
+    }
+  }
+  
+  # Combine all results into a single data frame
+  return(bind_rows(all_correlation_results))
+}
+
+# Get unique condition numbers from ratings_df
+condition_nums <- unique(ratings_trials_exp$condition_num)
+
+# Run the function
+all_results <- compute_correlations(ratings_trials_exp, t2, condition_nums, n_iterations = 1000)
+```
+
+```{r}
+#plot distributions of correlations for each concept in each group
+```
+
+```{r}
+#plotting
+
+#combine correlation_summary_df with all_results for combined plotting
+#first make all_results smaller for r's memory
+all_results <- all_results %>% 
+  group_by(condition_num, concept) %>% 
+  mutate(
+    avg_correlation = mean(correlation)
+  ) %>% 
+  ungroup()
+
+all_results <- all_results %>% 
+  select(condition_num, concept, avg_correlation) %>% 
+  ungroup()
+  
+all_results <- all_results %>% 
+  distinct()
+
+boostrapping_w_split_half <- merge(summary_correlation_results, all_results, by = "concept", all.x = TRUE)
+
+boostrapping_w_split_half <- boostrapping_w_split_half %>% 
+  select(-condition_num.y) %>% 
+  rename(condition_num = condition_num.x)
+
+#add t2 for unique_subjects
+boostrapping_w_split_half <- left_join(boostrapping_w_split_half, t2, by = "condition_num")
+
+#make sure condition_num is character value 
+boostrapping_w_split_half <- boostrapping_w_split_half %>% 
+  mutate(
+    condition_num = as.character(condition_num)
+  )
+
+#use summary results from boostrapping to compare
+#create vertical line each group at current sample size
+#add point for correlation for each group at current sample size
+
+#ggplot
+ggplot(boostrapping_w_split_half, aes(x = sample_size, y = mean_correlation, color = concept)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = mean_correlation - se_correlation, ymax = mean_correlation + se_correlation, group = concept),
+              alpha = 0.1, fill = "red", color = NA) +
+  geom_text(
+    data = boostrapping_w_split_half %>%
+      group_by(condition_num, concept) %>%
+      filter(sample_size == max(sample_size)), # Place label at the largest sample size
+    aes(
+      x = sample_size,
+      y = mean_correlation,
+      label = concept
+    ),
+    hjust = -0.1, # Slightly offset the labels horizontally
+    vjust = 0, # Adjust vertical spacing
+    size = 3,
+    inherit.aes = FALSE # Avoid inheriting other plot aesthetics
+  ) +
+  # Add vertical lines for current sample sizes from `t2`
+  geom_vline(
+    data = boostrapping_w_split_half,
+    aes(xintercept = unique_subjects/2), 
+    linetype = "dashed", 
+    color = "black"
+  ) +
+  geom_point(
+    data = boostrapping_w_split_half,
+    aes(x = unique_subjects/2, y = avg_correlation, color = concept, group = concept)
+  ) +
+  labs(
+    title = "Mean Reliability Across Sample Sizes for Each Concept and Condition",
+    x = "Number of Samples Correlated (Sample Size = Samples Correlated x 2)",
+    y = "Mean Reliability"
+  ) +
+  theme_minimal() +
+  facet_wrap(~ condition_num, ncol = 7) + 
+  theme(
+    legend.position = "none",
+    plot.margin = margin(50, 50, 50, 50),
+    panel.spacing = unit(3, "lines")) +
+  #scale_color_manual(values = custom_colors) +
+  coord_cartesian(clip = "off")
+
 ```

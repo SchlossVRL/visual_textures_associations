@@ -39,11 +39,19 @@
 
         async function createExperiment() {
 
-            var jsPsych = initJsPsych();
+            var jsPsych = initJsPsych({
+                on_finish: function () {
+                    jsPsych.data.get().localSave("csv", filename);
+                }
+            }
+            );
             var timeline = [];
 
             console.log(image_paths.length)
             //get the SONA id from the url
+
+            //old data pipe: 711Sy98ZMvOS
+            //new data pipe: Rn56BHzIriFm
 
 
             const sona_id = jsPsych.data.getURLVariable('id');
@@ -54,8 +62,29 @@
             const condition_num = await jsPsychPipe.getCondition("711Sy98ZMvOS");
             // const condition_num = 0;
 
-            concept_list = concept_conds[condition_num]
+            //Limit conditions run
+
+            // Map condition_num to one of the three conditions
+            let assigned_condition;
+            if (condition_num >= 0 && condition_num <= 3) {
+                assigned_condition = 3;
+            } else if (condition_num >= 4 && condition_num <= 8) {
+                assigned_condition = 4;
+            } else if (condition_num >= 9 && condition_num <= 11) {
+                assigned_condition = 5;
+            } else if (condition_num >= 12 && condition_num <= 14) {
+                assigned_condition = 10;
+            } else {
+                console.error("Unexpected condition number:", condition_num);
+            }
+
+            // Use the assigned condition number to get the concept list
+            concept_list = concept_conds[assigned_condition];
             concept_list = jsPsych.randomization.shuffle(concept_list);
+
+            //ALL conditions
+            //concept_list = concept_conds[condition_num]
+            //concept_list = jsPsych.randomization.shuffle(concept_list);
 
 
 
@@ -342,7 +371,6 @@
                 choices: ['Continue']
             };
             timeline.push(practice_complete);
-
 
 
 
