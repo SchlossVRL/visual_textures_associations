@@ -44,7 +44,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 current_dir<- getwd()
 
 image_dir <- paste0(current_dir, "/../images/")
-data_dir <-paste0(current_dir,'/../data/')
+data_dir <-paste0(current_dir,'/../data2/')
 data_files <-list.files(path = data_dir, full.names = TRUE, pattern="*.csv")
 print(paste0('we have data from ',length(data_files),' participants'))
 
@@ -103,6 +103,26 @@ concept_groups <- ratings_trials_exp %>%
 colnames(t) <- c("condition_num", "unique_subjects")
 t2 <- as.data.frame(t)
 
+```
+
+```{r}
+num_ratings <- ratings_trials_exp %>%
+  count(concept) %>%
+  arrange(desc(n))
+
+#write.csv(num_ratings, "num_ratings.csv", row.names = FALSE)
+```
+
+```{r}
+#adjusting ratings trials exp for only first rating of a concept per participant
+ratings_trials_exp <- ratings_trials_exp %>% 
+  group_by(subject_id, concept, texture) %>%
+  filter(trial_index == min(trial_index)) %>%
+  ungroup()
+
+num_ratings <- ratings_trials_exp %>%
+  count(subject_id, concept) %>%
+  arrange(desc(n))
 ```
 
 ## Group and pivot into a concept x texture matrix
