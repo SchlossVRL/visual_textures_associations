@@ -44,7 +44,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 current_dir<- getwd()
 
 image_dir <- paste0(current_dir, "/../images/")
-data_dir <-paste0(current_dir,'/../data2/')
+data_dir <-paste0(current_dir,'/../data/')
 data_files <-list.files(path = data_dir, full.names = TRUE, pattern="*.csv")
 print(paste0('we have data from ',length(data_files),' participants'))
 
@@ -244,8 +244,8 @@ ggplot(averages, aes(x = texture, y = AverageRatings)) +
   )
 ```
 
-
 # Hill Plots
+
 ```{r}
 #plot
 ggplot(averages_hills, aes(x = texture, y = AverageRatings)) +
@@ -279,6 +279,7 @@ ggplot(averages_hills, aes(x = texture, y = AverageRatings)) +
 ```
 
 # Individual Plots
+
 ```{r}
 # Set absolute path for the output folder
 plot_output_dir <- "/../plots"
@@ -368,9 +369,70 @@ get_semantic_distance <- function(concept1, concept2) {
   return(list(semantic_distance = semantic_distance, assign = assign))
 }
 ```
+
+```{r}
+#Generate all texture pairs
+textures <- unique(ratings_trials_exp$texture)
+texture_pairs <- combn(textures, 2, simplify = FALSE)
+```
+
+```{r}
+# Define all possible sets of 8 textures
+# Generate all combinations of 8 textures chosen from the 53 available
+texture_combinations_53_choose_8 <- combn(textures, 8, simplify = FALSE)
+
+# View the first few combinations
+head(texture_combinations_53_choose_8)
+```
+
+```{r}
+# Register the parallel backend (using all but 1 core)
+num_cores <- detectCores() - 1  # Use one less core than available
+cl <- makeCluster(num_cores)
+registerDoParallel(cl)
+
+# Function to generate 53 choose 8 combinations in parallel
+generate_combinations_parallel <- function(textures) {
+  # Get indices instead of splitting textures
+  texture_indices <- seq_along(textures)
+  
+  # Generate all index combinations of 53 choose 8 (VERY LARGE)
+  index_combinations <- combn(texture_indices, 8, simplify = FALSE)
+
+  # Determine chunk size dynamically based on core count
+  chunk_size <- ceiling(length(index_combinations) / num_cores)
+
+  # Split index combinations into chunks
+  index_chunks <- split(index_combinations, ceiling(seq_along(index_combinations) / chunk_size))
+  
+  # Use foreach to parallelize the combination generation
+  combinations <- foreach(chunk = index_chunks, .combine = c, .packages = "base") %dopar% {
+    lapply(chunk, function(idx) textures[idx])  # Convert indices back to texture names
+  }
+  
+  # Stop the parallel cluster
+  stopCluster(cl)
+  
+  return(combinations)
+}
+
+# Generate combinations in parallel
+textures <- unique(ratings_trials_exp$texture)  # Get your texture list
+start_time <- Sys.time()
+combinations_53_choose_8_parallel <- generate_combinations_parallel(textures)
+end_time <- Sys.time()
+
+# Print runtime
+print(paste("Time taken:", end_time - start_time))
+
+# Check the first few combinations
+head(combinations_53_choose_8_parallel)
+```
+
 ```{r}
 #practice with fruits and vegetables
 ```
+
 ```{r}
 #practice with animals
 animals <- ratings_trials_exp %>% 
@@ -379,56 +441,334 @@ animals <- ratings_trials_exp %>%
   summarize(AverageRatings = mean(response), .groups = "drop")
 
 # Generate all concept pairs
-animal_concepts <- unique(animals_long$concept)
+animal_concepts <- unique(animals$concept)
 animal_concept_pairs <- combn(animal_concepts, 2, simplify = FALSE) 
 
 animals_reshaped <- animals %>%
   spread(key = concept, value = AverageRatings)
 
-# Initialize a list to store results
-semantic_distances <- list()
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
 
 # Loop through each concept pair
-for (pair in animal_concept_pairs) {
+for (pair in animal_concept_pairs){
   # Loop through each combination of two textures
-  for (texture1 in unique(animals_reshaped$texture)) {
-    for (texture2 in unique(animals_reshaped$texture)) {
-      
-      # Extract ratings for Concept1 with Texture1 (x1) and Concept2 with Texture2 (x3)
-      concept1_rating_texture1 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[1]])  # x1
-      concept2_rating_texture2 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[2]])  # x3
-      
-      # Extract ratings for Concept2 with Texture1 (x2) and Concept1 with Texture2 (x4)
-      concept2_rating_texture1 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[2]])  # x2
-      concept1_rating_texture2 <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[1]])  # x4
-
-      # Make sure all ratings are valid (non-empty)
-      if (length(concept1_rating_texture1) > 0 && length(concept2_rating_texture2) > 0 &&
-          length(concept2_rating_texture1) > 0 && length(concept1_rating_texture2) > 0) {
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
         
-        # Calculate semantic distance for the set of two concepts and two textures
+        # Compute semantic distance
         result <- get_semantic_distance(
-          c(concept1_rating_texture1, concept2_rating_texture2),  # (x1, x3)
-          c(concept2_rating_texture1, concept1_rating_texture2)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
         )
         
-        # Store the result in the list with the pair of concepts and both textures
-        semantic_distances[[paste(pair[1], "vs", pair[2], texture1, "and", texture2)]] <- result$semantic_distance
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
       }
     }
   }
 }
 
-# Convert the list of results into a data frame
-results_df <- data.frame(
-  concept_pair = names(semantic_distances),
-  semantic_distance = unlist(semantic_distances)
-)
-
-# View the output
-head(results_df)
+# Add identifier column with all the info
+semantic_distances_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
 ```
 
+```{r}
+# Function to plot semantic distances and calculate MSE
+plot_semantic_distances <- function(df, concept1, concept2) {
+  # Filter for the given concept pair
+  filtered_df <- df %>%
+    filter((concept1 == !!concept1 & concept2 == !!concept2) | 
+           (concept1 == !!concept2 & concept2 == !!concept1))
+
+  # Get unique textures from the filtered data
+  unique_textures <- unique(c(filtered_df$texture1, filtered_df$texture2))
+
+  # Select 8 random textures (adjust if fewer than 8 available)
+  selected_textures <- sample(unique_textures, min(8, length(unique_textures)))
+
+  # Generate all possible texture pairs (8 choose 2 = 28 pairs)
+  texture_pairs <- combn(selected_textures, 2, simplify = FALSE)
+
+  # Extract semantic distances for the selected texture pairs
+  selected_distances <- filtered_df %>%
+    filter((texture1 %in% selected_textures) & (texture2 %in% selected_textures))
+
+  # Ensure only the exact (8 choose 2) combinations are included
+  selected_distances <- selected_distances %>%
+    filter(paste(texture1, texture2, sep = "_") %in% 
+             sapply(texture_pairs, function(x) paste(x[1], x[2], sep = "_")) |
+           paste(texture2, texture1, sep = "_") %in% 
+             sapply(texture_pairs, function(x) paste(x[1], x[2], sep = "_"))) %>%
+    arrange(semantic_distance)  # Sort by semantic distance
+
+  # Create label column for texture pairs, spacing only the labels
+  selected_distances <- selected_distances %>%
+    mutate(label = paste(texture1, texture2, sep = " vs "),
+           y_label_position = row_number() * 0.2)  # Space labels only
+
+  # Generate perfect semantic distance values between 0.1 and 0.9
+  perfect_distances <- seq(0.1, 0.9, length.out = 28)
+
+  # Calculate Mean Squared Error (MSE) between actual and perfect distances
+  mse <- mean((selected_distances$semantic_distance - perfect_distances)^2)
+  print(paste("Mean Squared Error (MSE):", mse))
+
+  # First plot: Bar plot for texture pairs
+  bar_plot <- ggplot(selected_distances, aes(x = paste(texture1, texture2, sep = " vs "), y = semantic_distance)) +
+    geom_col(fill = "steelblue") +
+    labs(title = paste("Semantic Distances for", concept1, "vs", concept2),
+         x = "Texture Pair",
+         y = "Semantic Distance") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+  # Second plot: Scatter plot with spaced-out labels
+  scatter_plot <- ggplot(selected_distances, aes(x = semantic_distance, y = 3)) +  # Points stay at y = 0
+    geom_point(size = 3, color = "red", alpha = 0.7) +  # Red points for visibility
+    xlim(0, 1.4) +  # Ensure space for labels on the right
+    labs(title = paste("Semantic Distance Distribution for", concept1, "vs", concept2),
+         x = "Semantic Distance",
+         y = "") +  # Remove y-axis label
+    theme_minimal() +
+    theme(axis.text.y = element_blank(),  # Remove y-axis labels
+          axis.ticks.y = element_blank(),  # Remove y-axis ticks
+          panel.grid.major.y = element_blank(),  # Remove horizontal grid lines
+          panel.grid.minor.y = element_blank()) +  # Remove minor horizontal grid lines
+    geom_text(aes(x = 1.05, label = label, y = y_label_position), hjust = 0, size = 4)  # Space labels only
+
+  # # Plot for the perfect distance comparison
+  # perfect_plot <- ggplot(data.frame(x = perfect_distances, y = rep(1, 28)), aes(x = x, y = y)) +
+  #   geom_point(color = "blue", size = 3, alpha = 0.7) +
+  #   xlim(0, 1.1) +
+  #   labs(title = "Perfect Semantic Distance Distribution (0.1 to 0.9)",
+  #        x = "Semantic Distance",
+  #        y = "") +
+  #   theme_minimal() +
+  #   theme(axis.text.y = element_blank(),
+  #         axis.ticks.y = element_blank(),
+  #         panel.grid.major.y = element_blank(),
+  #         panel.grid.minor.y = element_blank())
+
+  # Show all plots
+  print(bar_plot)
+  print(scatter_plot)
+  #print(perfect_plot)
+}
+
+# Example: Plot for "bear" vs "bird"
+plot_semantic_distances(semantic_distances_df, "bear", "bird")
+```
+
+```{r}
+
+# Function to plot semantic distances and calculate MSE for every combination of 8 textures
+plot_semantic_distances <- function(df) {
+  # Get unique textures from the data
+  unique_textures <- unique(c(df$texture1, df$texture2))
+  
+  # Generate all combinations of 8 textures (8 choose 2 combinations)
+  texture_combinations <- combn(unique_textures, 8, simplify = FALSE)
+  
+  # Initialize an empty dataframe to store MSE results
+  mse_results <- data.frame(
+    texture_combination = character(),
+    mse = numeric(),
+    stringsAsFactors = FALSE
+  )
+  
+  # Initialize an empty list to store the plots
+  plots <- list()
+  
+  # Loop through each combination of 8 textures
+  for (texture_set in texture_combinations) {
+    # Generate all possible texture pairs (8 choose 2 = 28 pairs)
+    texture_pairs <- combn(texture_set, 2, simplify = FALSE)
+    
+    # Extract semantic distances for the selected texture pairs
+    selected_distances <- df %>%
+      filter((texture1 %in% texture_set) & (texture2 %in% texture_set))
+    
+    # Ensure only the exact combinations are included
+    selected_distances <- selected_distances %>%
+      filter(paste(texture1, texture2, sep = "_") %in% 
+               sapply(texture_pairs, function(x) paste(x[1], x[2], sep = "_")) |
+             paste(texture2, texture1, sep = "_") %in% 
+               sapply(texture_pairs, function(x) paste(x[1], x[2], sep = "_"))) %>%
+      arrange(semantic_distance)  # Sort by semantic distance
+    
+    # Create label column for texture pairs
+    selected_distances <- selected_distances %>%
+      mutate(label = paste(texture1, texture2, sep = " vs "),
+             y_label_position = row_number() * 0.2)  # Space labels only
+    
+    # Generate perfect semantic distance values between 0.1 and 0.9
+    perfect_distances <- seq(0.1, 0.9, length.out = 28)
+    
+    # Calculate Mean Squared Error (MSE) between actual and perfect distances
+    mse <- mean((selected_distances$semantic_distance - perfect_distances)^2)
+    
+    # Save MSE results with the texture set
+    mse_results <- rbind(mse_results, 
+                         data.frame(texture_combination = paste(texture_set, collapse = "_"),
+                                    mse = mse))
+    
+    # Generate plots for this combination of textures
+    bar_plot <- ggplot(selected_distances, aes(x = paste(texture1, texture2, sep = " vs "), y = semantic_distance)) +
+      geom_col(fill = "steelblue") +
+      labs(title = paste("Semantic Distances for", paste(texture_set, collapse = "_")),
+           x = "Texture Pair",
+           y = "Semantic Distance") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    
+    scatter_plot <- ggplot(selected_distances, aes(x = semantic_distance, y = 0)) +  # Points stay at y = 0
+      geom_point(size = 3, color = "red", alpha = 0.7) +  # Red points for visibility
+      xlim(0, 1.1) +  # Ensure space for labels on the right
+      labs(title = paste("Semantic Distance Distribution for", paste(texture_set, collapse = "_")),
+           x = "Semantic Distance",
+           y = "") +  # Remove y-axis label
+      theme_minimal() +
+      theme(axis.text.y = element_blank(),  # Remove y-axis labels
+            axis.ticks.y = element_blank(),  # Remove y-axis ticks
+            panel.grid.major.y = element_blank(),  # Remove horizontal grid lines
+            panel.grid.minor.y = element_blank()) +  # Remove minor horizontal grid lines
+      geom_text(aes(x = 1.05, label = label, y = y_label_position), hjust = 0, size = 4)  # Space labels only
+    
+    # perfect_plot <- ggplot(data.frame(x = perfect_distances, y = rep(1, 28)), aes(x = x, y = y)) +
+    #   geom_point(color = "blue", size = 3, alpha = 0.7) +
+    #   xlim(0, 1.1) +
+    #   labs(title = "Perfect Semantic Distance Distribution (0.1 to 0.9)",
+    #        x = "Semantic Distance",
+    #        y = "") +
+    #   theme_minimal() +
+    #   theme(axis.text.y = element_blank(),
+    #         axis.ticks.y = element_blank(),
+    #         panel.grid.major.y = element_blank(),
+    #         panel.grid.minor.y = element_blank())
+    
+    # Store the plots
+    plots[[paste(texture_set, collapse = "_")]] <- list(bar_plot, scatter_plot)
+  }
+  
+  # Combine all plots into facets
+  all_plots <- do.call(gridExtra::grid.arrange, c(plots, ncol = 2))
+  
+  # Return the MSE results dataframe and the combined plot
+  list(mse_results = mse_results, combined_plot = all_plots)
+}
+
+# Example: Run the function
+result <- plot_semantic_distances(semantic_distances_df)
+
+# View the MSE results
+print(result$mse_results)
+```
+
+```{r}
+library(doParallel)
+library(foreach)
+```
+
+```{r}
+# Function to plot semantic distances and calculate MSE for every combination of 8 textures
+plot_semantic_distances_parallel <- function(df) {
+  # Get unique textures from the data
+  unique_textures <- unique(c(df$texture1, df$texture2))
+  
+  # Generate all combinations of 8 textures (8 choose 2 combinations)
+  texture_combinations <- combn(unique_textures, 8, simplify = FALSE)
+  
+  # Initialize an empty dataframe to store MSE results
+  mse_results <- data.frame(
+    texture_combination = character(),
+    mse = numeric(),
+    stringsAsFactors = FALSE
+  )
+  
+  # Set up parallel backend to use multiple cores
+  num_cores <- detectCores() - 1  # Use one less than the total number of cores
+  cl <- makeCluster(num_cores)
+  registerDoParallel(cl)
+  
+  # Run the loop in parallel using foreach
+  results <- foreach(texture_set = texture_combinations, .combine = rbind, .packages = c("dplyr", "ggplot2")) %dopar% {
+    # Generate all possible texture pairs (8 choose 2 = 28 pairs)
+    texture_pairs <- combn(texture_set, 2, simplify = FALSE)
+    
+    # Extract semantic distances for the selected texture pairs
+    selected_distances <- df %>%
+      filter((texture1 %in% texture_set) & (texture2 %in% texture_set))
+    
+    # Ensure only the exact combinations are included
+    selected_distances <- selected_distances %>%
+      filter(paste(texture1, texture2, sep = "_") %in% 
+               sapply(texture_pairs, function(x) paste(x[1], x[2], sep = "_")) |
+             paste(texture2, texture1, sep = "_") %in% 
+               sapply(texture_pairs, function(x) paste(x[1], x[2], sep = "_"))) %>%
+      arrange(semantic_distance)  # Sort by semantic distance
+    
+    # Create label column for texture pairs
+    selected_distances <- selected_distances %>%
+      mutate(label = paste(texture1, texture2, sep = " vs "),
+             y_label_position = row_number() * 0.2)  # Space labels only
+    
+    # Generate perfect semantic distance values between 0.1 and 0.9
+    perfect_distances <- seq(0.1, 0.9, length.out = 28)
+    
+    # Calculate Mean Squared Error (MSE) between actual and perfect distances
+    mse <- mean((selected_distances$semantic_distance - perfect_distances)^2)
+    
+    # Return results to be combined later
+    mse_result <- data.frame(texture_combination = paste(texture_set, collapse = "_"),
+                             mse = mse)
+    
+    return(mse_result)
+  }
+  
+  # Stop the parallel cluster
+  stopCluster(cl)
+  
+  # Combine results into a final dataframe
+  mse_results <- results
+  
+  # Return the MSE results dataframe
+  return(mse_results)
+}
+
+# Example: Run the parallel function
+mse_results <- plot_semantic_distances_parallel(semantic_distances_df)
+
+# View the MSE results
+print(mse_results)
+```
 
 # Rating Stability
 
@@ -568,13 +908,8 @@ ggplot(summarize_split_halves, aes(x = sample_size, y = mean_correlation, color 
   coord_cartesian(clip = "off")
 ```
 
-
-
-
-
-
-
 # Bootstrapping Stuff (if wanted)
+
 ```{r}
 
 bootstrap_associations_matrices<- function(ratings_df, sample_size){
