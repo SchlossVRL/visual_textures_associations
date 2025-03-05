@@ -1,0 +1,2141 @@
+"rt","stimulus","response","trial_type","trial_index","time_elapsed","internal_node_id","subject_id","condition_num","sona_id","success","timeout","failed_images","failed_audio","failed_video","question_order","slider_start","practiceTrial","practiceTrialNum","correct","concept","texture_id"
+"2424","Welcome to our experiment!<p>At the bottom of this screen, you will see a button that says ""Begin Experiment"".<br>Please only click that button when you are ready to complete the 30 minute experiment in one sitting.</p><p> Once you click that button, it will not be possible to restart the experiment.","0","html-button-response","0","2428","0.0-0.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"","","","preload","1","2716","0.0-1.0","q5eqt0e8w2","5","92064","true","false","[]","[]","[]","","","","","","",""
+"1382","","","fullscreen","2","5100","0.0-2.0","q5eqt0e8w2","5","92064","true","","","","","","","","","","",""
+"49447","","{""Consent"":[""<strong>I consent</strong>""]}","survey-multi-select","3","54553","0.0-3.0","q5eqt0e8w2","5","92064","","","","","","[0]","","","","","",""
+"2876","Welcome! <p> This experiment involves two parts: demographic information, followed by the experimental task.<p> It will take about 30 minutes to complete both parts.","0","html-button-response","4","57431","0.0-4.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"15268","","{""Age"":""19"",""Gender"":""Female"",""Race/ethnicity"":""White"",""Languages"":""English, French""}","survey-text","5","72708","0.0-5.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"6212","
+                        <div style=""height:720px;"">
+                            <div style='text-align:left; font-size:18px; line-height:25px; width: 1200px;'>
+                                During this experiment you will be presented with a series of concepts, one at a time, from the set below:                             </div>
+
+                            <div style=""text-align: left; width: 1200px;"">
+                                <p style=""font-size:18px; line-height:20px; text-align:center; font-weight:bold "">celery,
+                                    mushroom, corn, eggplant, carrot
+                                <p style=""font-size:18px; line-height:18px;""></p>
+                            </div>
+                            <div style='text-align:left; font-size:18px; line-height:25px; width: 1200px;'>
+                                For each concept, you will be asked to rate how much you associate it with each of the visual textures
+                                below on a scale from 'not at all' to 'very much'.                            </div>
+                            <div style=""display: flex; justify-content: center; width: 90%;"">
+                                <div style=""text-align: center; width: 1000px; display: grid; grid-template-columns: repeat(13, .5fr); gap: 5px; padding: 5px; margin: 0 auto;"">
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D1.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D4.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D8.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D11.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D14.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D16.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D17.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D18.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D19.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D20.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D22.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D25.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D26.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D34.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D35.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D36.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D37.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D46.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D47.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D48.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D49.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D51.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D52.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D53.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D55.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D56.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D57.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D64.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D65.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D66.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D68.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D74.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D75.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D76.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D77.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D78.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D79.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D81.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D82.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D83.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D84.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D85.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D87.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D92.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D94.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D95.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D96.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D101.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D102.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D103.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D104.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                    <div style=""width: 95%; aspect-ratio: 1;"">
+                                        <img src=""images/D105.png"" style=""width: 100%; height: 100%; object-fit: cover;"">
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <br>
+                            <div style='text-align:left; font-size:18px; line-height:25px; width: 1200px;'>
+                                Each trial will include one concept word and one visual texture. You will be asked to make your rating by
+                                sliding the cursor along a slider response scale.<br>                                Before beginning, please look at the list of concepts and textures.                                 For each concept, think about the texture you associate least with it.                                When you see that texture paired with that concept please click on the left endpoint of the scale near 'not at
+                                all'.                                Now, please think about the texture you associate most with it.                                When you see that texture paired with that concept please click on the right endpoint of the scale near 'very
+                                much'. <br><br>                                Please use the full range of the scale.                                That is, if you believe a concept is somewhat associated with a texture, you would click at the midpoint of the
+                                scale.                                You will be asked to rate each texture for a given concept before moving on to the next.<br>Press the 'Continue'
+                                button for instructions on how to use the slider.
+
+                            </div>
+                            <!-- Centered text paragraphs -->
+
+                        </div>
+                         ","null","html-slider-response","6","78925","0.0-6.0","q5eqt0e8w2","5","92064","","","","","","","0","true","","","",""
+"1896","<div style=""width:800px;""><p style=""text-align:left"">To move the slider, click and drag your cursor to the location of the scale where you would like to make your rating and then let go. When you let go of the slider, your response will be recorded and the next trial will begin. <br>
+                    We are interested in your initial impressions of each concept for a given scale, so please go with your first intuition. <br>
+                    Before you begin the experiment, there will be four training trials for you to practice using the slider. <br>
+                     When you are ready to start the training trials, please click ""Continue"".</p><br></div>","0","html-button-response","7","80823","0.0-7.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                                    <p style=""font-size:25px;"">Please move the slider all the way to the <br> right endpoint of the scale</p>
+
+                                    </div>
+                                </div>","200","html-slider-response","8","84100","0.0-8.0-0.0","q5eqt0e8w2","5","92064","","","","","","","0","true","0","true","",""
+"917","<p align='center'><b>Good job!</b> Click on 'Continue' to proceed.</p>","0","html-button-response","9","85520","0.0-8.0-1.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                                    <p style=""font-size:25px;"">Please move the slider all the way to the <br> left endpoint of the scale</p>
+
+                                    </div>
+                                </div>","-200","html-slider-response","10","86874","0.0-9.0-0.0","q5eqt0e8w2","5","92064","","","","","","","0","true","1","true","",""
+"669","<p align='center'><b>Good job!</b> Click on 'Continue' to proceed.</p>","0","html-button-response","11","88046","0.0-9.0-1.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                                    <p style=""font-size:25px;"">Please move the slider halfway between the center and right endpoint of the scale</p>
+
+                                    </div>
+                                </div>","94","html-slider-response","12","92449","0.0-10.0-0.0","q5eqt0e8w2","5","92064","","","","","","","0","true","2","true","",""
+"724","<p align='center'><b>Good job!</b> Click on 'Continue' to proceed.</p>","0","html-button-response","13","93676","0.0-10.0-1.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                                    <p style=""font-size:25px;"">Please move the slider halfway between the center and left endpoint of the scale</p>
+
+                                    </div>
+                                </div>","-106","html-slider-response","14","96367","0.0-11.0-0.0","q5eqt0e8w2","5","92064","","","","","","","0","true","3","true","",""
+"709","<p align='center'><b>Good job!</b> Click on 'Continue' to proceed.</p>","0","html-button-response","15","97578","0.0-11.0-1.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"1358","<p>Great job! You've completed the practice trials. Now you will begin the main task.</p>","0","html-button-response","16","98938","0.0-12.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"2145","<p>In this block of trials, you will be asked to rate how much you associate each texture with the concept</p > <p style = 'font-size:150%; font-weight: bold'>celery</p><br></br>","0","html-button-response","17","101085","0.0-13.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D36.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-110","html-slider-response","18","104193","0.0-14.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D36.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D52.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-114","html-slider-response","19","106389","0.0-15.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D52.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D87.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-66","html-slider-response","20","110138","0.0-16.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D87.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D64.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","21","112110","0.0-17.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D64.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D25.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-162","html-slider-response","22","114306","0.0-18.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D25.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D49.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","88","html-slider-response","23","116655","0.0-19.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D49.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D20.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-101","html-slider-response","24","118876","0.0-20.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D20.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D103.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-103","html-slider-response","25","120974","0.0-21.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D103.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D53.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-108","html-slider-response","26","123243","0.0-22.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D53.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D94.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","27","125060","0.0-23.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D94.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D92.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","28","126920","0.0-24.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D92.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D18.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-175","html-slider-response","29","129671","0.0-25.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D18.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D101.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","34","html-slider-response","30","131723","0.0-26.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D101.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D77.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-112","html-slider-response","31","134331","0.0-27.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D77.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D34.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","32","136773","0.0-28.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D34.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D16.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","38","html-slider-response","33","139243","0.0-29.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D16.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D75.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","34","140813","0.0-30.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D75.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D37.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-64","html-slider-response","35","143225","0.0-31.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D37.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D46.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","36","145027","0.0-32.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D46.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D56.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","30","html-slider-response","37","147125","0.0-33.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D56.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D82.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","27","html-slider-response","38","148992","0.0-34.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D82.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D48.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","39","150672","0.0-35.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D48.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D111.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-54","html-slider-response","40","152643","0.0-36.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D111.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D96.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","41","154573","0.0-37.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D96.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D104.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-30","html-slider-response","42","156463","0.0-38.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D104.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D47.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-166","html-slider-response","43","160010","0.0-39.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D47.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D35.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","44","161957","0.0-40.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D35.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D55.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","21","html-slider-response","45","163644","0.0-41.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D55.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D68.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","34","html-slider-response","46","165195","0.0-42.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D68.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D65.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","90","html-slider-response","47","167142","0.0-43.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D65.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D78.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","28","html-slider-response","48","169025","0.0-44.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D78.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D8.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-74","html-slider-response","49","171461","0.0-45.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D8.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D17.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-106","html-slider-response","50","173986","0.0-46.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D17.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D81.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-164","html-slider-response","51","176455","0.0-47.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D81.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D79.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","22","html-slider-response","52","178392","0.0-48.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D79.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D4.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-154","html-slider-response","53","180242","0.0-49.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D4.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D11.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-1","html-slider-response","54","183284","0.0-50.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D11.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D19.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-104","html-slider-response","55","186498","0.0-51.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D19.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D84.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-174","html-slider-response","56","188413","0.0-52.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D84.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D95.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","57","190620","0.0-53.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D95.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D14.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","26","html-slider-response","58","192474","0.0-54.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D14.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D26.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","59","193970","0.0-55.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D26.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D1.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","60","195983","0.0-56.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D1.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D51.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","95","html-slider-response","61","198571","0.0-57.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D51.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D85.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","101","html-slider-response","62","200759","0.0-58.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D85.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D66.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","63","202743","0.0-59.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D66.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D57.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","64","204811","0.0-60.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D57.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D22.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-119","html-slider-response","65","207530","0.0-61.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D22.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D102.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-92","html-slider-response","66","209903","0.0-62.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D102.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D105.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","61","html-slider-response","67","211701","0.0-63.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D105.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D83.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-74","html-slider-response","68","215539","0.0-64.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D83.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D74.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-161","html-slider-response","69","217800","0.0-65.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D74.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >celery</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D76.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","24","html-slider-response","70","219922","0.0-66.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","celery","images/D76.png"
+"2189","<p>Great Job! You've finished block 1.<br></br> You have 4 block(s) left to go.<br></br></p>","0","html-button-response","71","222613","0.0-67.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"1938","<p>In this block of trials, you will be asked to rate how much you associate each texture with the concept</p > <p style = 'font-size:150%; font-weight: bold'>mushroom</p><br></br>","0","html-button-response","72","224552","0.0-68.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D75.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-6","html-slider-response","73","228046","0.0-69.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D75.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D83.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-110","html-slider-response","74","231607","0.0-70.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D83.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D1.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-28","html-slider-response","75","233803","0.0-71.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D1.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D56.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-149","html-slider-response","76","235838","0.0-72.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D56.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D101.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-134","html-slider-response","77","238443","0.0-73.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D101.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D96.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","78","240816","0.0-74.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D96.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D68.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","14","html-slider-response","79","242802","0.0-75.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D68.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D84.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","61","html-slider-response","80","244749","0.0-76.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D84.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D22.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","96","html-slider-response","81","246686","0.0-77.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D22.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D35.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","124","html-slider-response","82","248575","0.0-78.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D35.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D46.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-162","html-slider-response","83","250916","0.0-79.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D46.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D74.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","104","html-slider-response","84","253842","0.0-80.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D74.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D87.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-31","html-slider-response","85","257623","0.0-81.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D87.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D25.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","86","259328","0.0-82.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D25.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D79.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-80","html-slider-response","87","261242","0.0-83.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D79.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D19.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","16","html-slider-response","88","264289","0.0-84.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D19.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D76.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-90","html-slider-response","89","266307","0.0-85.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D76.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D49.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-189","html-slider-response","90","268335","0.0-86.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D49.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D17.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-189","html-slider-response","91","270240","0.0-87.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D17.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D104.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","92","272716","0.0-88.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D104.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D52.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-61","html-slider-response","93","275378","0.0-89.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D52.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D20.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-109","html-slider-response","94","277107","0.0-90.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D20.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D16.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-188","html-slider-response","95","279045","0.0-91.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D16.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D65.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-185","html-slider-response","96","281723","0.0-92.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D65.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D34.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","40","html-slider-response","97","283596","0.0-93.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D34.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D55.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-72","html-slider-response","98","285228","0.0-94.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D55.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D18.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-82","html-slider-response","99","287272","0.0-95.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D18.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D8.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","13","html-slider-response","100","289298","0.0-96.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D8.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D26.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","101","290713","0.0-97.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D26.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D4.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","46","html-slider-response","102","292570","0.0-98.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D4.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D92.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","22","html-slider-response","103","295265","0.0-99.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D92.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D77.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","0","html-slider-response","104","298916","0.0-100.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D77.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D85.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-173","html-slider-response","105","302108","0.0-101.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D85.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D66.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","103","html-slider-response","106","304320","0.0-102.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D66.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D78.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","107","306363","0.0-103.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D78.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D103.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-112","html-slider-response","108","308452","0.0-104.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D103.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D53.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-162","html-slider-response","109","310521","0.0-105.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D53.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D11.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-190","html-slider-response","110","312699","0.0-106.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D11.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D37.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","15","html-slider-response","111","314317","0.0-107.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D37.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D82.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-34","html-slider-response","112","316198","0.0-108.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D82.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D94.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","113","317589","0.0-109.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D94.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D36.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","39","html-slider-response","114","319607","0.0-110.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D36.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D81.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-17","html-slider-response","115","323628","0.0-111.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D81.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D14.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-128","html-slider-response","116","325495","0.0-112.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D14.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D47.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","117","327626","0.0-113.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D47.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D51.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-26","html-slider-response","118","329436","0.0-114.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D51.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D95.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","119","331253","0.0-115.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D95.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D48.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","29","html-slider-response","120","332893","0.0-116.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D48.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D105.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","121","334589","0.0-117.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D105.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D57.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","88","html-slider-response","122","337455","0.0-118.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D57.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D102.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-96","html-slider-response","123","339681","0.0-119.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D102.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D111.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","166","html-slider-response","124","341740","0.0-120.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D111.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >mushroom</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D64.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-186","html-slider-response","125","344081","0.0-121.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","mushroom","images/D64.png"
+"869","<p>Great Job! You've finished block 2.<br></br> You have 3 block(s) left to go.<br></br></p>","0","html-button-response","126","345453","0.0-122.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"1052","<p>In this block of trials, you will be asked to rate how much you associate each texture with the concept</p > <p style = 'font-size:150%; font-weight: bold'>corn</p><br></br>","0","html-button-response","127","346507","0.0-123.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D68.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","29","html-slider-response","128","349742","0.0-124.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D68.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D87.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","30","html-slider-response","129","351623","0.0-125.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D87.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D81.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","27","html-slider-response","130","353794","0.0-126.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D81.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D95.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-154","html-slider-response","131","355531","0.0-127.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D95.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D19.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-169","html-slider-response","132","358234","0.0-128.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D19.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D65.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-94","html-slider-response","133","360790","0.0-129.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D65.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D94.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","134","362270","0.0-130.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D94.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D82.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-125","html-slider-response","135","364377","0.0-131.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D82.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D53.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-170","html-slider-response","136","366133","0.0-132.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D53.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D49.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","137","367948","0.0-133.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D49.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D111.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","32","html-slider-response","138","369588","0.0-134.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D111.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D25.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","139","371431","0.0-135.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D25.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D85.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-97","html-slider-response","140","373656","0.0-136.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D85.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D4.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","34","html-slider-response","141","375250","0.0-137.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D4.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D18.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","29","html-slider-response","142","377574","0.0-138.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D18.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D55.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-138","html-slider-response","143","381184","0.0-139.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D55.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D14.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-103","html-slider-response","144","385792","0.0-140.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D14.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D34.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","62","html-slider-response","145","387818","0.0-141.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D34.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D64.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-70","html-slider-response","146","390270","0.0-142.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D64.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D26.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","147","392386","0.0-143.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D26.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D74.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","150","html-slider-response","148","394692","0.0-144.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D74.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D83.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-89","html-slider-response","149","396318","0.0-145.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D83.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D77.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","10","html-slider-response","150","397974","0.0-146.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D77.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D101.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-124","html-slider-response","151","399600","0.0-147.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D101.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D75.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","80","html-slider-response","152","401955","0.0-148.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D75.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D37.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-18","html-slider-response","153","404094","0.0-149.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D37.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D17.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-138","html-slider-response","154","406684","0.0-150.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D17.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D8.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-12","html-slider-response","155","408611","0.0-151.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D8.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D51.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-116","html-slider-response","156","410157","0.0-152.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D51.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D48.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","46","html-slider-response","157","413776","0.0-153.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D48.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D11.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-106","html-slider-response","158","415858","0.0-154.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D11.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D46.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-189","html-slider-response","159","418352","0.0-155.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D46.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D76.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-77","html-slider-response","160","420603","0.0-156.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D76.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D52.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","6","html-slider-response","161","423554","0.0-157.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D52.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D20.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-118","html-slider-response","162","425507","0.0-158.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D20.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D47.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-186","html-slider-response","163","427768","0.0-159.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D47.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D92.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","63","html-slider-response","164","429754","0.0-160.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D92.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D79.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-38","html-slider-response","165","432359","0.0-161.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D79.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D84.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","15","html-slider-response","166","433936","0.0-162.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D84.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D22.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","76","html-slider-response","167","435786","0.0-163.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D22.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D102.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-78","html-slider-response","168","437780","0.0-164.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D102.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D103.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-88","html-slider-response","169","439322","0.0-165.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D103.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D104.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-154","html-slider-response","170","441075","0.0-166.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D104.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D56.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-156","html-slider-response","171","442909","0.0-167.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D56.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D96.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","172","444382","0.0-168.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D96.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D1.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","43","html-slider-response","173","447437","0.0-169.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D1.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D105.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","174","449085","0.0-170.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D105.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D78.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-50","html-slider-response","175","450837","0.0-171.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D78.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D57.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","92","html-slider-response","176","452341","0.0-172.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D57.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D66.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","157","html-slider-response","177","453891","0.0-173.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D66.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D35.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","165","html-slider-response","178","456104","0.0-174.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D35.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D36.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","184","html-slider-response","179","458226","0.0-175.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D36.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >corn</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D16.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-64","html-slider-response","180","460100","0.0-176.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","corn","images/D16.png"
+"5177","<p>Great Job! You've finished block 3.<br></br> You have 2 block(s) left to go.<br></br></p>","0","html-button-response","181","465780","0.0-177.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"826","<p>In this block of trials, you will be asked to rate how much you associate each texture with the concept</p > <p style = 'font-size:150%; font-weight: bold'>eggplant</p><br></br>","0","html-button-response","182","466608","0.0-178.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D82.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-90","html-slider-response","183","472111","0.0-179.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D82.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D68.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","46","html-slider-response","184","474040","0.0-180.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D68.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D46.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","185","476333","0.0-181.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D46.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D16.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","58","html-slider-response","186","477908","0.0-182.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D16.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D77.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","85","html-slider-response","187","479517","0.0-183.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D77.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D47.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","188","481286","0.0-184.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D47.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D48.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-16","html-slider-response","189","483126","0.0-185.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D48.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D78.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","38","html-slider-response","190","484783","0.0-186.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D78.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D104.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","65","html-slider-response","191","486467","0.0-187.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D104.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D56.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","192","487789","0.0-188.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D56.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D20.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-150","html-slider-response","193","490114","0.0-189.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D20.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D95.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","194","491730","0.0-190.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D95.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D96.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","195","493001","0.0-191.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D96.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D79.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","94","html-slider-response","196","494608","0.0-192.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D79.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D37.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","130","html-slider-response","197","496538","0.0-193.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D37.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D52.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","25","html-slider-response","198","498154","0.0-194.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D52.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D94.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","199","499456","0.0-195.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D94.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D87.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","58","html-slider-response","200","501240","0.0-196.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D87.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D76.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","7","html-slider-response","201","502995","0.0-197.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D76.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D111.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","16","html-slider-response","202","504338","0.0-198.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D111.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D36.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","21","html-slider-response","203","505964","0.0-199.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D36.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D101.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","204","507370","0.0-200.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D101.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D11.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-100","html-slider-response","205","508949","0.0-201.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D11.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D81.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-20","html-slider-response","206","510360","0.0-202.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D81.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D4.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","121","html-slider-response","207","512275","0.0-203.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D4.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D64.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","208","514156","0.0-204.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D64.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D19.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","21","html-slider-response","209","515957","0.0-205.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D19.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D8.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-13","html-slider-response","210","517510","0.0-206.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D8.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D18.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-118","html-slider-response","211","519945","0.0-207.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D18.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D14.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","96","html-slider-response","212","521626","0.0-208.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D14.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D26.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","213","523419","0.0-209.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D26.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D17.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-64","html-slider-response","214","525438","0.0-210.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D17.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D92.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","12","html-slider-response","215","527206","0.0-211.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D92.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D105.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-81","html-slider-response","216","528615","0.0-212.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D105.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D25.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","217","530029","0.0-213.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D25.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D34.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","23","html-slider-response","218","531919","0.0-214.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D34.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D83.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-125","html-slider-response","219","533374","0.0-215.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D83.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D57.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","141","html-slider-response","220","535570","0.0-216.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D57.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D102.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-120","html-slider-response","221","537185","0.0-217.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D102.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D49.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-29","html-slider-response","222","538840","0.0-218.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D49.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D85.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-154","html-slider-response","223","541214","0.0-219.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D85.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D22.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","7","html-slider-response","224","542910","0.0-220.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D22.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D75.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","10","html-slider-response","225","545050","0.0-221.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D75.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D53.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","140","html-slider-response","226","546673","0.0-222.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D53.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D103.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","39","html-slider-response","227","548338","0.0-223.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D103.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D51.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-149","html-slider-response","228","550137","0.0-224.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D51.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D74.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-13","html-slider-response","229","551714","0.0-225.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D74.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D84.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","65","html-slider-response","230","553267","0.0-226.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D84.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D35.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","14","html-slider-response","231","554674","0.0-227.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D35.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D55.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","60","html-slider-response","232","556202","0.0-228.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D55.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D65.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-67","html-slider-response","233","557832","0.0-229.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D65.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D1.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-22","html-slider-response","234","560649","0.0-230.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D1.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >eggplant</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D66.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","7","html-slider-response","235","563004","0.0-231.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","eggplant","images/D66.png"
+"1255","<p>Great Job! You've finished block 4.<br></br> You have 1 block(s) left to go.<br></br></p>","0","html-button-response","236","564762","0.0-232.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"826","<p>In this block of trials, you will be asked to rate how much you associate each texture with the concept</p > <p style = 'font-size:150%; font-weight: bold'>carrot</p><br></br>","0","html-button-response","237","565590","0.0-233.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D25.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","238","569767","0.0-234.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D25.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D37.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","14","html-slider-response","239","571302","0.0-235.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D37.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D48.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","75","html-slider-response","240","572935","0.0-236.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D48.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D66.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","50","html-slider-response","241","574388","0.0-237.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D66.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D102.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-86","html-slider-response","242","576037","0.0-238.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D102.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D14.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-91","html-slider-response","243","577686","0.0-239.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D14.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D22.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","20","html-slider-response","244","579358","0.0-240.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D22.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D81.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","18","html-slider-response","245","580757","0.0-241.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D81.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D77.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","75","html-slider-response","246","582389","0.0-242.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D77.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D19.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","108","html-slider-response","247","583950","0.0-243.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D19.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D53.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","120","html-slider-response","248","585648","0.0-244.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D53.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D78.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","56","html-slider-response","249","589125","0.0-245.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D78.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D52.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","38","html-slider-response","250","590453","0.0-246.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D52.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D85.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-83","html-slider-response","251","591893","0.0-247.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D85.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D96.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","252","593284","0.0-248.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D96.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D84.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","37","html-slider-response","253","594795","0.0-249.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D84.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D20.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-84","html-slider-response","254","596202","0.0-250.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D20.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D55.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-21","html-slider-response","255","597883","0.0-251.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D55.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D18.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-79","html-slider-response","256","599612","0.0-252.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D18.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D26.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","257","601155","0.0-253.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D26.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D8.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-25","html-slider-response","258","602739","0.0-254.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D8.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D95.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-200","html-slider-response","259","604202","0.0-255.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D95.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D76.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-22","html-slider-response","260","605964","0.0-256.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D76.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D101.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-114","html-slider-response","261","608102","0.0-257.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D101.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D4.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","125","html-slider-response","262","609664","0.0-258.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D4.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D51.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-97","html-slider-response","263","611430","0.0-259.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D51.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D103.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","40","html-slider-response","264","612830","0.0-260.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D103.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D83.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-84","html-slider-response","265","614309","0.0-261.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D83.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D56.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-160","html-slider-response","266","616600","0.0-262.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D56.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D111.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","79","html-slider-response","267","618072","0.0-263.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D111.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D17.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","46","html-slider-response","268","619552","0.0-264.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D17.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D36.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","92","html-slider-response","269","621050","0.0-265.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D36.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D92.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","87","html-slider-response","270","622461","0.0-266.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D92.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D68.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","47","html-slider-response","271","623789","0.0-267.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D68.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D64.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-161","html-slider-response","272","625244","0.0-268.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D64.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D75.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","10","html-slider-response","273","627069","0.0-269.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D75.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D47.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-153","html-slider-response","274","629337","0.0-270.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D47.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D82.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","47","html-slider-response","275","630848","0.0-271.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D82.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D46.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-128","html-slider-response","276","632881","0.0-272.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D46.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D1.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-19","html-slider-response","277","634449","0.0-273.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D1.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D35.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","97","html-slider-response","278","636226","0.0-274.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D35.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D65.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-106","html-slider-response","279","638743","0.0-275.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D65.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D94.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-170","html-slider-response","280","640818","0.0-276.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D94.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D104.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","48","html-slider-response","281","642531","0.0-277.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D104.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D34.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","86","html-slider-response","282","644170","0.0-278.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D34.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D79.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","112","html-slider-response","283","645730","0.0-279.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D79.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D87.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","58","html-slider-response","284","647484","0.0-280.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D87.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D49.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-26","html-slider-response","285","649237","0.0-281.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D49.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D105.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-74","html-slider-response","286","650836","0.0-282.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D105.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D16.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","42","html-slider-response","287","652073","0.0-283.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D16.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D74.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","5","html-slider-response","288","653980","0.0-284.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D74.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D57.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","146","html-slider-response","289","655782","0.0-285.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D57.png"
+"NaN","<div style=""width:500px;"">
+                            <p style=""font-size:50px; font-weight:bold;""
+                            >carrot</p>
+                            <div style=""width:240px; margin: auto;"">
+                                <img src=""images/D11.png"" style= ""width:200px""alt=""img"">
+                            </div>
+                        </div>","-65","html-slider-response","290","657415","0.0-286.0","q5eqt0e8w2","5","92064","","","","","","","0","","","","carrot","images/D11.png"
+"1085","<p>Great Job! You're done rating all concepts!<br></br></p>","0","html-button-response","291","659003","0.0-287.0","q5eqt0e8w2","5","92064","","","","","","","","","","","",""
