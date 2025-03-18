@@ -248,7 +248,7 @@ ggplot(averages, aes(x = texture, y = AverageRatings)) +
 
 ```{r}
 #plot
-ggplot(averages_hills, aes(x = texture, y = AverageRatings)) +
+hill_plots <- ggplot(averages_hills, aes(x = texture, y = AverageRatings)) +
   geom_image(aes(image = cropped_texture_id, y = -0.1), size = 0.05) +  # Place images under bars
   geom_bar(stat = "identity", fill = "white", color = "black", size = 0.1) +
   facet_wrap(~ concept, scales = "free_x") +
@@ -276,6 +276,14 @@ ggplot(averages_hills, aes(x = texture, y = AverageRatings)) +
     panel.grid.minor = element_blank(),
     plot.background = element_blank()
   )
+
+hill_plots
+```
+
+Save plot
+```{r}
+#save the plot
+ggsave(filename = "hill_plots.pdf", plot = hill_plots, width = 8, height = 4)
 ```
 
 # Individual Plots
