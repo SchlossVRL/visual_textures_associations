@@ -66,19 +66,9 @@
 
             // Map condition_num to one of the three conditions
             let assigned_condition;
-            if (condition_num >= 0 && condition_num <= 1) {
-                assigned_condition = 0;
-            } else if (condition_num >= 2 && condition_num <= 3) {
-                assigned_condition = 3;
-            } else if (condition_num >= 4 && condition_num <= 5) {
-                assigned_condition = 4;
-            } else if (condition_num >= 6 && condition_num <= 7) {
-                assigned_condition = 8;
-            } else if (condition_num >= 8 && condition_num <= 9) {
+            if (condition_num >= 0 && condition_num <= 6) {
                 assigned_condition = 11;
-            } else if (condition_num >= 10 && condition_num <= 11) {
-                assigned_condition = 12;
-            } else if (condition_num >= 12 && condition_num <= 13) {
+            } else if (condition_num >= 7 && condition_num <= 13) {
                 assigned_condition = 13;
             } else {
                 console.error("Unexpected condition number:", condition_num);
