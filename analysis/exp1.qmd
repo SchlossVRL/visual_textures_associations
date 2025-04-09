@@ -281,6 +281,7 @@ hill_plots
 ```
 
 Save plot
+
 ```{r}
 #save the plot
 ggsave(filename = "hill_plots.pdf", plot = hill_plots, width = 8, height = 4)
@@ -380,69 +381,216 @@ get_semantic_distance <- function(concept1, concept2) {
 
 ```{r}
 #Generate all texture pairs
-textures <- unique(ratings_trials_exp$texture)
-texture_pairs <- combn(textures, 2, simplify = FALSE)
+textures <- tibble(texture = unique(unlist(ratings_trials_exp$texture)))
+texture_pairs <- combn(textures$texture, 2, simplify = FALSE)
 ```
 
 ```{r}
-# Define all possible sets of 8 textures
-# Generate all combinations of 8 textures chosen from the 53 available
-texture_combinations_53_choose_8 <- combn(textures, 8, simplify = FALSE)
-
-# View the first few combinations
-head(texture_combinations_53_choose_8)
+# # Define all possible sets of 8 textures
+# # Generate all combinations of 8 textures chosen from the 53 available
+# texture_combinations_53_choose_8 <- combn(textures$texture, 8, simplify = FALSE)
+# 
+# # View the first few combinations
+# head(texture_combinations_53_choose_8)
 ```
 
 ```{r}
-# Register the parallel backend (using all but 1 core)
-num_cores <- detectCores() - 1  # Use one less core than available
-cl <- makeCluster(num_cores)
-registerDoParallel(cl)
+# # Register the parallel backend (using all but 1 core)
+# num_cores <- detectCores() - 1  # Use one less core than available
+# cl <- makeCluster(num_cores)
+# registerDoParallel(cl)
+# 
+# # Function to generate 53 choose 8 combinations in parallel
+# generate_combinations_parallel <- function(textures) {
+#   # Get indices instead of splitting textures
+#   texture_indices <- seq_along(textures)
+#   
+#   # Generate all index combinations of 53 choose 8 (VERY LARGE)
+#   index_combinations <- combn(texture_indices, 8, simplify = FALSE)
+# 
+#   # Determine chunk size dynamically based on core count
+#   chunk_size <- ceiling(length(index_combinations) / num_cores)
+# 
+#   # Split index combinations into chunks
+#   index_chunks <- split(index_combinations, ceiling(seq_along(index_combinations) / chunk_size))
+#   
+#   # Use foreach to parallelize the combination generation
+#   combinations <- foreach(chunk = index_chunks, .combine = c, .packages = "base") %dopar% {
+#     lapply(chunk, function(idx) textures[idx])  # Convert indices back to texture names
+#   }
+#   
+#   # Stop the parallel cluster
+#   stopCluster(cl)
+#   
+#   return(combinations)
+# }
+# 
+# # Generate combinations in parallel
+# textures <- unique(ratings_trials_exp$texture)  # Get your texture list
+# start_time <- Sys.time()
+# combinations_53_choose_8_parallel <- generate_combinations_parallel(textures)
+# end_time <- Sys.time()
+# 
+# # Print runtime
+# print(paste("Time taken:", end_time - start_time))
+# 
+# # Check the first few combinations
+# head(combinations_53_choose_8_parallel)
+```
 
-# Function to generate 53 choose 8 combinations in parallel
-generate_combinations_parallel <- function(textures) {
-  # Get indices instead of splitting textures
-  texture_indices <- seq_along(textures)
-  
-  # Generate all index combinations of 53 choose 8 (VERY LARGE)
-  index_combinations <- combn(texture_indices, 8, simplify = FALSE)
+```{r}
+#fruits
+fruits <- ratings_trials_exp %>% 
+  filter(concept == c("blueberry", "lemon", "mango", "strawberry", "watermelon", "apple", "banana", "cherry", "grape", "peach")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
 
-  # Determine chunk size dynamically based on core count
-  chunk_size <- ceiling(length(index_combinations) / num_cores)
+# Generate all concept pairs
+fruits_concepts <- unique(fruits$concept)
+fruits_concept_pairs <- combn(fruits_concepts, 2, simplify = FALSE) 
 
-  # Split index combinations into chunks
-  index_chunks <- split(index_combinations, ceiling(seq_along(index_combinations) / chunk_size))
-  
-  # Use foreach to parallelize the combination generation
-  combinations <- foreach(chunk = index_chunks, .combine = c, .packages = "base") %dopar% {
-    lapply(chunk, function(idx) textures[idx])  # Convert indices back to texture names
+fruits_reshaped <- fruits %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in fruits_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
   }
-  
-  # Stop the parallel cluster
-  stopCluster(cl)
-  
-  return(combinations)
 }
 
-# Generate combinations in parallel
-textures <- unique(ratings_trials_exp$texture)  # Get your texture list
-start_time <- Sys.time()
-combinations_53_choose_8_parallel <- generate_combinations_parallel(textures)
-end_time <- Sys.time()
+# Add identifier column with all the info
+semantic_distances_fruits_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
 
-# Print runtime
-print(paste("Time taken:", end_time - start_time))
-
-# Check the first few combinations
-head(combinations_53_choose_8_parallel)
+#add group name column
+semantic_distances_fruits_df <- semantic_distances_fruits_df %>% 
+  mutate(
+    group = "fruits"
+  )
 ```
 
 ```{r}
-#practice with fruits and vegetables
+#veggies
+veggies <- ratings_trials_exp %>% 
+  filter(concept == c("carrot", "celery", "corn", "eggplant", "mushroom")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+veggies_concepts <- unique(animals$concept)
+veggies_concept_pairs <- combn(animal_concepts, 2, simplify = FALSE) 
+
+veggies_reshaped <- veggies %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in veggies_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_veggies_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_veggies_df <- semantic_distances_veggies_df %>% 
+  mutate(
+    group = "veggies"
+  )
+
 ```
 
 ```{r}
-#practice with animals
+#animals
 animals <- ratings_trials_exp %>% 
   filter(concept == c("lion", "bird", "frog", "fish", "bear")) %>% 
   group_by(concept, texture) %>% 
@@ -506,8 +654,822 @@ for (pair in animal_concept_pairs){
 }
 
 # Add identifier column with all the info
-semantic_distances_df <- semantic_distances_df %>%
+semantic_distances_animals_df <- semantic_distances_df %>%
   mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_animals_df <- semantic_distances_animals_df %>% 
+  mutate(
+    group = "animals"
+  )
+
+```
+
+```{r}
+#weather
+weather <- ratings_trials_exp %>% 
+  filter(concept == c("blizzard", "drought", "hurricane", "lightning", "sandstorm")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+weather_concepts <- unique(weather$concept)
+weather_concept_pairs <- combn(weather_concepts, 2, simplify = FALSE) 
+
+weather_reshaped <- weather %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in weather_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_weather_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_weather_df <- semantic_distances_weather_df %>% 
+  mutate(
+    group = "weather"
+  )
+
+```
+
+```{r}
+#clothes
+clothes <- ratings_trials_exp %>% 
+  filter(concept == c("dress", "pants", "shirt", "socks", "shoes")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+clothes_concepts <- unique(clothes$concept)
+clothes_concept_pairs <- combn(clothes_concepts, 2, simplify = FALSE) 
+
+clothes_reshaped <- clothes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in clothes_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_clothes_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_clothes_df <- semantic_distances_clothes_df %>% 
+  mutate(
+    group = "clothes"
+  )
+
+```
+
+```{r}
+#scenes
+scenes <- ratings_trials_exp %>% 
+  filter(concept == c("beach", "field", "ocean", "sky", "sunset")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+scenes_concepts <- unique(scenes$concept)
+scenes_concept_pairs <- combn(scenes_concepts, 2, simplify = FALSE) 
+
+scenes_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in scenes_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_scenes_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_scenes_df <- semantic_distances_scenes_df %>% 
+  mutate(
+    group = "scenes"
+  )
+
+```
+
+```{r}
+#emotions
+emotions <- ratings_trials_exp %>% 
+  filter(concept == c("angry", "disgust", "fearful", "happy", "sad")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+emotions_concepts <- unique(emotions$concept)
+emotions_concept_pairs <- combn(emotions_concepts, 2, simplify = FALSE) 
+
+emotions_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in emotions_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_emotions_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_emotions_df <- semantic_distances_emotions_df %>% 
+  mutate(
+    group = "emotions"
+  )
+
+```
+
+```{r}
+#values
+values <- ratings_trials_exp %>% 
+  filter(concept == c("evil", "greed", "justice", "love", "peace")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+values_concepts <- unique(values$concept)
+values_concept_pairs <- combn(values_concepts, 2, simplify = FALSE) 
+
+values_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in values_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_values_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_values_df <- semantic_distances_values_df %>% 
+  mutate(
+    group = "values"
+  )
+
+```
+
+```{r}
+#carquals
+carquals <- ratings_trials_exp %>% 
+  filter(concept == c("comfort", "efficiency", "speed", "safety", "reliability")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+carquals_concepts <- unique(carquals$concept)
+carquals_concept_pairs <- combn(carquals_concepts, 2, simplify = FALSE) 
+
+carquals_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in carquals_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_carquals_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_carquals_df <- semantic_distances_carquals_df %>% 
+  mutate(
+    group = "carquals"
+  )
+
+```
+
+```{r}
+#location
+location <- ratings_trials_exp %>% 
+  filter(concept == c("above", "below", "beside", "near", "far")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+location_concepts <- unique(location$concept)
+location_concept_pairs <- combn(location_concepts, 2, simplify = FALSE) 
+
+location_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in location_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(location_reshaped[location_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(location_reshaped[location_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(location_reshaped[location_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(location_reshaped[location_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_location_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_location_df <- semantic_distances_location_df %>% 
+  mutate(
+    group = "location"
+  )
+
+```
+
+```{r}
+#time
+time <- ratings_trials_exp %>% 
+  filter(concept == c("dawn", "day", "dusk", "night", "noon")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+time_concepts <- unique(time$concept)
+time_concept_pairs <- combn(time_concepts, 2, simplify = FALSE) 
+
+time_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in time_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(time_reshaped[time_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(time_reshaped[time_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(time_reshaped[time_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(time_reshaped[time_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_time_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_time_df <- semantic_distances_time_df %>% 
+  mutate(
+    group = "time"
+  )
+
+```
+
+```{r}
+#transport
+transport <- ratings_trials_exp %>% 
+  filter(concept == c("airplane", "car", "boat", "truck", "train")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+transport_concepts <- unique(transport$concept)
+transport_concept_pairs <- combn(transport_concepts, 2, simplify = FALSE) 
+
+transport_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in transport_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(transport_reshaped[transport_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(transport_reshaped[transport_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(transport_reshaped[transport_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(transport_reshaped[transport_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_transport_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_transport_df <- semantic_distances_transport_df %>% 
+  mutate(
+    group = "transport"
+  )
+
+```
+
+```{r}
+#activity
+activity <- ratings_trials_exp %>% 
+  filter(concept == c("driving", "eating", "sleeping", "leisure", "working")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+activity_concepts <- unique(activity$concept)
+activity_concept_pairs <- combn(activity_concepts, 2, simplify = FALSE) 
+
+activity_reshaped <- scenes %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in activity_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(activity_reshaped[activity_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(activity_reshaped[activity_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(activity_reshaped[activity_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(activity_reshaped[activity_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_activity_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_activity_df <- semantic_distances_activity_df %>% 
+  mutate(
+    group = "activity"
+  )
+
+```
+
+
+```{r}
+#save semantic distance data frames as separate csv's
+write.csv(semantic_distances_animals_df, "animals.csv", row.names = FALSE)
+#semantic_distances_animals_df
+
+write.csv(semantic_distances_fruits_df, "fruits.csv", row.names = FALSE)
+#semantic_distances_fruits_df
+
+write.csv(semantic_distances_veggies_df, "veggies.csv", row.names = FALSE)
+#semantic_distances_veggies_df
+
+write.csv(semantic_distances_weather_df, "weather.csv", row.names = FALSE)
+#semantic_distances_weather_df
+
+write.csv(semantic_distances_clothes_df, "clothes.csv", row.names = FALSE)
+#semantic_distances_clothes_df
+
+write.csv(semantic_distances_scenes_df, "scenes.csv", row.names = FALSE)
+#semantic_distances_scenes_df
+
+write.csv(semantic_distances_emotions_df, "emotions.csv", row.names = FALSE)
+#semantic_distances_emotions_df
+
+write.csv(semantic_distances_values_df, "values.csv", row.names = FALSE)
+#semantic_distances_values_df
+
+write.csv(semantic_distances_carquals_df, "carquals.csv", row.names = FALSE)
+#semantic_distances_carquals_df
+
+write.csv(semantic_distances_location_df, "location.csv", row.names = FALSE)
+#semantic_distances_location_df
+
+write.csv(semantic_distances_time_df, "time.csv", row.names = FALSE)
+#semantic_distances_time_df
+
+write.csv(semantic_distances_transport_df, "transport.csv", row.names = FALSE)
+#semantic_distances_transport_df
+
+write.csv(semantic_distances_activity_df, "activity.csv", row.names = FALSE)
+#semantic_distances_activity_df
+
+#combine semantic distances data frames
+
+#save combined semantic distanc data frame
 ```
 
 ```{r}
