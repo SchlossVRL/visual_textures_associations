@@ -386,6 +386,71 @@ texture_pairs <- combn(textures$texture, 2, simplify = FALSE)
 ```
 
 ```{r}
+#perceptual distance for each texture pair
+#load in embedding space and key
+texture_space <- read_csv("triplet_textures_groupEmb_3d.csv")
+levels <- read_csv("d_levels.csv")
+
+#clean texture names
+levels <- levels %>% 
+  mutate(
+    texture =  gsub(".*(D\\d+).png", "\\1", levels$x)
+  )
+levels <- levels %>% 
+  select(texture)
+
+#remove extra row from embedding
+texture_space <- texture_space %>% 
+  slice(-1)
+
+#combine with levels
+texture_space <- bind_cols(levels, texture_space)
+
+texture_space <- texture_space %>% 
+  select(texture, `0`, `1`, `2`)
+
+#rename
+texture_space <- texture_space %>% 
+  rename(
+    x = `0`,
+    y = `1`,
+    z = `2`
+  )
+  
+#use euclidean distance to calculate perceptual distance measure for each texture pair ----
+
+#euclidean distance for 2 points in 3 dimensions
+euclidean_distance <- function(row1, row2) {
+  sqrt((row2$x - row1$x)^2 + (row2$y - row1$y)^2 + (row2$z - row1$z)^2)
+}
+
+#place to store the results
+percept_distances_df <- data.frame(texture1 = character(0),
+                                   texture2 = character(0),
+                                   perceptual_distance = numeric(0))
+
+# Loop through the texture pairs and calculate the distance
+for (i in seq_along(texture_pairs)) {
+  # Extract the texture names for this pair
+  texture1 <- texture_pairs[[i]][1]
+  texture2 <- texture_pairs[[i]][2]
+  
+  # Extract the rows corresponding to the textures
+  row1 <- texture_space[texture_space$texture == texture1, ]
+  row2 <- texture_space[texture_space$texture == texture2, ]
+  
+  #calc euclidean distance
+  percept_distance <- euclidean_distance(row1, row2)
+  
+  #store
+  percept_distances_df <- rbind(percept_distances_df, data.frame(texture1 = texture1, 
+                                                                 texture2 = texture2, 
+                                                                 perceptual_distance = percept_distance))
+}
+
+```
+
+```{r}
 # # Define all possible sets of 8 textures
 # # Generate all combinations of 8 textures chosen from the 53 available
 # texture_combinations_53_choose_8 <- combn(textures$texture, 8, simplify = FALSE)
@@ -511,6 +576,8 @@ semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
   mutate(
     group = "fruits"
   )
+
+
 ```
 
 ```{r}
@@ -521,8 +588,8 @@ veggies <- ratings_trials_exp %>%
   summarize(AverageRatings = mean(response), .groups = "drop")
 
 # Generate all concept pairs
-veggies_concepts <- unique(animals$concept)
-veggies_concept_pairs <- combn(animal_concepts, 2, simplify = FALSE) 
+veggies_concepts <- unique(veggies$concept)
+veggies_concept_pairs <- combn(veggies_concepts, 2, simplify = FALSE) 
 
 veggies_reshaped <- veggies %>%
   spread(key = concept, value = AverageRatings)
@@ -904,7 +971,7 @@ emotions <- ratings_trials_exp %>%
 emotions_concepts <- unique(emotions$concept)
 emotions_concept_pairs <- combn(emotions_concepts, 2, simplify = FALSE) 
 
-emotions_reshaped <- scenes %>%
+emotions_reshaped <- emotions %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -980,7 +1047,7 @@ values <- ratings_trials_exp %>%
 values_concepts <- unique(values$concept)
 values_concept_pairs <- combn(values_concepts, 2, simplify = FALSE) 
 
-values_reshaped <- scenes %>%
+values_reshaped <- values %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -1056,7 +1123,7 @@ carquals <- ratings_trials_exp %>%
 carquals_concepts <- unique(carquals$concept)
 carquals_concept_pairs <- combn(carquals_concepts, 2, simplify = FALSE) 
 
-carquals_reshaped <- scenes %>%
+carquals_reshaped <- carquals %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -1132,7 +1199,7 @@ location <- ratings_trials_exp %>%
 location_concepts <- unique(location$concept)
 location_concept_pairs <- combn(location_concepts, 2, simplify = FALSE) 
 
-location_reshaped <- scenes %>%
+location_reshaped <- location %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -1208,7 +1275,7 @@ time <- ratings_trials_exp %>%
 time_concepts <- unique(time$concept)
 time_concept_pairs <- combn(time_concepts, 2, simplify = FALSE) 
 
-time_reshaped <- scenes %>%
+time_reshaped <- time %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -1284,7 +1351,7 @@ transport <- ratings_trials_exp %>%
 transport_concepts <- unique(transport$concept)
 transport_concept_pairs <- combn(transport_concepts, 2, simplify = FALSE) 
 
-transport_reshaped <- scenes %>%
+transport_reshaped <- transport %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -1360,7 +1427,7 @@ activity <- ratings_trials_exp %>%
 activity_concepts <- unique(activity$concept)
 activity_concept_pairs <- combn(activity_concepts, 2, simplify = FALSE) 
 
-activity_reshaped <- scenes %>%
+activity_reshaped <- activity %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -1427,49 +1494,77 @@ semantic_distances_activity_df <- semantic_distances_activity_df %>%
 
 
 ```{r}
+#add perceptual distances to each semantic distance df
+semantic_distances_animals_df <- merge(semantic_distances_animals_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_fruits_df <- merge(semantic_distances_fruits_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_veggies_df <- merge(semantic_distances_veggies_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_weather_df <- merge(semantic_distances_weather_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_clothes_df <- merge(semantic_distances_clothes_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_scenes_df <- merge(semantic_distances_scenes_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_emotions_df <- merge(semantic_distances_emotions_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_values_df <- merge(semantic_distances_values_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_carquals_df <- merge(semantic_distances_carquals_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_location_df <- merge(semantic_distances_location_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_time_df <- merge(semantic_distances_time_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_transport_df <- merge(semantic_distances_transport_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+semantic_distances_activity_df <- merge(semantic_distances_activity_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+
+
 #save semantic distance data frames as separate csv's
-write.csv(semantic_distances_animals_df, "animals.csv", row.names = FALSE)
+write.csv(semantic_distances_animals_df, "semantic_distances/animals.csv", row.names = FALSE)
 #semantic_distances_animals_df
 
-write.csv(semantic_distances_fruits_df, "fruits.csv", row.names = FALSE)
+write.csv(semantic_distances_fruits_df, "semantic_distances/fruits.csv", row.names = FALSE)
 #semantic_distances_fruits_df
 
-write.csv(semantic_distances_veggies_df, "veggies.csv", row.names = FALSE)
+write.csv(semantic_distances_veggies_df, "semantic_distances/veggies.csv", row.names = FALSE)
 #semantic_distances_veggies_df
 
-write.csv(semantic_distances_weather_df, "weather.csv", row.names = FALSE)
+write.csv(semantic_distances_weather_df, "semantic_distances/weather.csv", row.names = FALSE)
 #semantic_distances_weather_df
 
-write.csv(semantic_distances_clothes_df, "clothes.csv", row.names = FALSE)
+write.csv(semantic_distances_clothes_df, "semantic_distances/clothes.csv", row.names = FALSE)
 #semantic_distances_clothes_df
 
-write.csv(semantic_distances_scenes_df, "scenes.csv", row.names = FALSE)
+write.csv(semantic_distances_scenes_df, "semantic_distances/scenes.csv", row.names = FALSE)
 #semantic_distances_scenes_df
 
-write.csv(semantic_distances_emotions_df, "emotions.csv", row.names = FALSE)
+write.csv(semantic_distances_emotions_df, "semantic_distances/emotions.csv", row.names = FALSE)
 #semantic_distances_emotions_df
 
-write.csv(semantic_distances_values_df, "values.csv", row.names = FALSE)
+write.csv(semantic_distances_values_df, "semantic_distances/values.csv", row.names = FALSE)
 #semantic_distances_values_df
 
-write.csv(semantic_distances_carquals_df, "carquals.csv", row.names = FALSE)
+write.csv(semantic_distances_carquals_df, "semantic_distances/carquals.csv", row.names = FALSE)
 #semantic_distances_carquals_df
 
-write.csv(semantic_distances_location_df, "location.csv", row.names = FALSE)
+write.csv(semantic_distances_location_df, "semantic_distances/location.csv", row.names = FALSE)
 #semantic_distances_location_df
 
-write.csv(semantic_distances_time_df, "time.csv", row.names = FALSE)
+write.csv(semantic_distances_time_df, "semantic_distances/time.csv", row.names = FALSE)
 #semantic_distances_time_df
 
-write.csv(semantic_distances_transport_df, "transport.csv", row.names = FALSE)
+write.csv(semantic_distances_transport_df, "semantic_distances/transport.csv", row.names = FALSE)
 #semantic_distances_transport_df
 
-write.csv(semantic_distances_activity_df, "activity.csv", row.names = FALSE)
+write.csv(semantic_distances_activity_df, "semantic_distances/activity.csv", row.names = FALSE)
 #semantic_distances_activity_df
 
 #combine semantic distances data frames
 
-#save combined semantic distanc data frame
+#save combined semantic distances data frame
 ```
 
 ```{r}
