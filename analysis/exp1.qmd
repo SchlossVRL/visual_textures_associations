@@ -189,6 +189,7 @@ crop_image <- function(image_path, output_dir) {
 # Apply cropping to all texture images
 texture_paths <- texture_paths %>%
   mutate(cropped_texture_id = sapply(texture_id, crop_image, output_dir = output_dir))
+
 ```
 
 ```{r}
@@ -284,7 +285,7 @@ Save plot
 
 ```{r}
 #save the plot
-ggsave(filename = "hill_plots.pdf", plot = hill_plots, width = 8, height = 4)
+#ggsave(filename = "hill_plots.pdf", plot = hill_plots, width = 8, height = 4)
 ```
 
 # Individual Plots
@@ -334,7 +335,7 @@ for (concept in unique_concepts) {
   file_path <- file.path(plot_output_dir, file_name)  # Save inside the specified folder
   
   #save the plot
-  ggsave(filename = file_name, plot = plot, width = 8, height = 4)
+  #ggsave(filename = file_name, plot = plot, width = 8, height = 4)
 }
 
 # Print confirmation message
@@ -342,7 +343,106 @@ print(paste0("Plots saved to: ", plot_output_dir))
 
 ```
 
+
+#Get entropies for each texture-concept association distribution 
+
+Function for calculating entropy of each concept's distribution, takes a matrix where each concept is a row and each texture is a column with values as the average association rating for each pair. 
+
+```{r}
+
+get_ents<-function(x){
+  l={}
+  for(item in x){
+    l<-rbind(l,entropies_c[item])
+    
+    return(l)
+  }
+  
+}
+
+```
+
+
+```{r}
+#define matrix structured tibble to plug into function for entropy values
+ratings_mat <- ratings_trials_grouped_wide %>% 
+  ungroup()
+
+p_mat <- ratings_mat
+
+#make sure that concepts column in character value
+
+p_mat$concept<-as.character(p_mat$concept)
+
+#check
+class(p_mat$concept)
+
+#make sure is matrix
+#p_mat <- as.matrix(p_mat)
+
+
+
+
+```
+
+
+```{r}
+#loop for normalizing ratings values
+for(i in 1:nrow(p_mat)){
+  p_mat[i,2:ncol(p_mat)]<- p_mat[i,2:ncol(p_mat)]/sum(p_mat[i,2:ncol(p_mat)])
+}
+
+#convert to base r data frame to work with original loop
+p_mat <- as.data.frame(p_mat)
+
+#empty vector to store entropy values
+entropies = c()
+
+#loop calculating entropy of each distribution --- KM original code for base r data frame
+for (i in 1:nrow(p_mat)){
+  logs = c()
+  for(j in 2:length(p_mat[i,1:ncol(p_mat)])){
+    if(p_mat[i,j]==0){
+      logs<- append(logs,0)
+    }else{
+    logs<- append(logs, log(p_mat[i,j]))
+    }
+  }
+  entropies<- append(entropies, sum(-logs*p_mat[i,2:ncol(p_mat)]))
+}
+
+
+#add names to entropy vector
+names(entropies)<- ratings_mat$concept
+
+
+#turn into tibble to merge with main associations ratings tibble
+entropies_df <- tibble(
+  concept = names(entropies),
+  entropy = as.numeric(entropies)  
+)
+
+```
+
+
+
 # Doubles
+
+We operationalized semantic discriminability using the metric semantic distance
+
+Semantic distance:
+- assumed associations ratings between features and concepts are normally distributed with a mean equal to the mean association rating and variance that is largest when the association rating is closest to the center of the rating scale. 
+- defined: in an assignment, the absolute difference in the probabilities of each assignment being chosen by a random individual. 
+  - delta_x = (x1 + x4) - (x2 + x3)
+  - x1 = average association strength between feature 1 and concept 1
+  - x2 = average association strength between feature 2 and concept 2
+  - x3 = average association strength between feature 1 and concept 2
+  - x4 = average association strength between feature 2 and concept 1
+  
+If delta_x > 0 then feature 1 will be assigned with concept 1 and feature 2 will be assigned with concept 2.
+If delta_x < 0 then feature 1 will be assigned with concept 2 and feature 2 will be assigned with concept 1. 
+
+  - delta_x = |Prob(delta_x>0) - Prob(delta_x <0)|
 
 ```{r}
 #semantic distance function 
@@ -384,6 +484,10 @@ get_semantic_distance <- function(concept1, concept2) {
 textures <- tibble(texture = unique(unlist(ratings_trials_exp$texture)))
 texture_pairs <- combn(textures$texture, 2, simplify = FALSE)
 ```
+
+
+
+Perceptual distance - operationalized as the euclidean distance between visual textures in the raw embedding space estimated with Salmon in our triplet study. 
 
 ```{r}
 #perceptual distance for each texture pair
@@ -503,10 +607,26 @@ for (i in seq_along(texture_pairs)) {
 # head(combinations_53_choose_8_parallel)
 ```
 
+Break concepts into related groups (concepts which may reasonably appear in the same visualization) and calculate semantic distances, max capacity for semantic discriminability, mean entropy, and total variance (TV) for every combination of two concepts in that group and two textures. 
+
+  - We defined 13 groups of concepts (fruits, vegetables, animals, weather, clothes, scenes, emotions, values, car qualities, relative locations, time of day, modes of transportation, and activities)
+  
+  - Also defined a set of concrete and a set of abstract concepts
+
+Function for Total Variation  
+```{r}
+#TV
+total_variation <- function(p_j1, p_j2) {
+  0.5 * sum(abs(p_j1 - p_j2))
+}
+```
+  
+  
+
 ```{r}
 #fruits
 fruits <- ratings_trials_exp %>% 
-  filter(concept == c("blueberry", "lemon", "mango", "strawberry", "watermelon", "apple", "banana", "cherry", "grape", "peach")) %>% 
+  filter(concept %in% c("blueberry", "lemon", "mango", "strawberry", "watermelon", "apple", "banana", "cherry", "grape", "peach")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -577,13 +697,92 @@ semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
     group = "fruits"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_fruits_df <- semantic_distances_fruits_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_fruits_df <- semantic_distances_fruits_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+fruits_p_mat <- p_mat %>% 
+  filter(concept %in% c("blueberry", "lemon", "mango", "strawberry", "watermelon", "apple", "banana", "cherry", "grape", "peach"))
+
+#calc TV
+
+# Convert and reassign row names
+fruits_p_mat_fixed <- as.matrix(fruits_p_mat[, -1])
+rownames(fruits_p_mat_fixed) <- fruits_p_mat$concept
+
+#place to store TVs
+fruits_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in fruits_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- fruits_p_mat_fixed[concept1, ]
+  p_j2 <- fruits_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  fruits_tv_results[[length(fruits_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+fruits_tv_df <- do.call(rbind, fruits_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+fruits_tv_df$group_nTV <- fruits_tv_df$TV / sum(fruits_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
+  left_join(fruits_tv_df, by = c("concept1", "concept2"))
 
 ```
+
+
 
 ```{r}
 #veggies
 veggies <- ratings_trials_exp %>% 
-  filter(concept == c("carrot", "celery", "corn", "eggplant", "mushroom")) %>% 
+  filter(concept %in% c("carrot", "celery", "corn", "eggplant", "mushroom")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -654,18 +853,96 @@ semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
     group = "veggies"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_veggies_df <- semantic_distances_veggies_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_veggies_df <- semantic_distances_veggies_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+veggies_p_mat <- p_mat %>% 
+  filter(concept %in% c("carrot", "celery", "corn", "eggplant", "mushroom"))
+
+#calc TV
+
+# Convert and reassign row names
+veggies_p_mat_fixed <- as.matrix(veggies_p_mat[, -1])
+rownames(veggies_p_mat_fixed) <- veggies_p_mat$concept
+
+#place to store TVs
+veggies_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in veggies_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- veggies_p_mat_fixed[concept1, ]
+  p_j2 <- veggies_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  veggies_tv_results[[length(veggies_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+veggies_tv_df <- do.call(rbind, veggies_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+veggies_tv_df$group_nTV <- veggies_tv_df$TV / sum(veggies_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
+  left_join(veggies_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #animals
 animals <- ratings_trials_exp %>% 
-  filter(concept == c("lion", "bird", "frog", "fish", "bear")) %>% 
+  filter(concept %in% c("lion", "bird", "frog", "fish", "bear")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
 # Generate all concept pairs
-animal_concepts <- unique(animals$concept)
-animal_concept_pairs <- combn(animal_concepts, 2, simplify = FALSE) 
+animals_concepts <- unique(animals$concept)
+animals_concept_pairs <- combn(animals_concepts, 2, simplify = FALSE) 
 
 animals_reshaped <- animals %>%
   spread(key = concept, value = AverageRatings)
@@ -681,7 +958,7 @@ semantic_distances_df <- data.frame(
 )
 
 # Loop through each concept pair
-for (pair in animal_concept_pairs){
+for (pair in animals_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
@@ -730,12 +1007,90 @@ semantic_distances_animals_df <- semantic_distances_animals_df %>%
     group = "animals"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_animals_df <- semantic_distances_animals_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_animals_df <- semantic_distances_animals_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_animals_df <- semantic_distances_animals_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_animals_df <- semantic_distances_animals_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+animals_p_mat <- p_mat %>% 
+  filter(concept %in% c("lion", "bird", "frog", "fish", "bear"))
+
+#calc TV
+
+# Convert and reassign row names
+animals_p_mat_fixed <- as.matrix(animals_p_mat[, -1])
+rownames(animals_p_mat_fixed) <- animals_p_mat$concept
+
+#place to store TVs
+animals_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in animals_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- animals_p_mat_fixed[concept1, ]
+  p_j2 <- animals_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  animals_tv_results[[length(animals_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+animals_tv_df <- do.call(rbind, animals_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+animals_tv_df$group_nTV <- animals_tv_df$TV / sum(animals_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_animals_df <- semantic_distances_animals_df %>%
+  left_join(animals_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #weather
 weather <- ratings_trials_exp %>% 
-  filter(concept == c("blizzard", "drought", "hurricane", "lightning", "sandstorm")) %>% 
+  filter(concept %in% c("blizzard", "drought", "hurricane", "lightning", "sandstorm")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -806,12 +1161,91 @@ semantic_distances_weather_df <- semantic_distances_weather_df %>%
     group = "weather"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_weather_df <- semantic_distances_weather_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_weather_df <- semantic_distances_weather_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_weather_df <- semantic_distances_weather_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_weather_df <- semantic_distances_weather_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+weather_p_mat <- p_mat %>% 
+  filter(concept %in% c("blizzard", "drought", "hurricane", "lightning", "sandstorm"))
+
+#calc TV
+
+# Convert and reassign row names
+weather_p_mat_fixed <- as.matrix(weather_p_mat[, -1])
+rownames(weather_p_mat_fixed) <- weather_p_mat$concept
+
+#place to store TVs
+weather_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in weather_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- weather_p_mat_fixed[concept1, ]
+  p_j2 <- weather_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  weather_tv_results[[length(weather_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+weather_tv_df <- do.call(rbind, weather_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+weather_tv_df$group_nTV <- weather_tv_df$TV / sum(weather_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_weather_df <- semantic_distances_weather_df %>%
+  left_join(weather_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #clothes
 clothes <- ratings_trials_exp %>% 
-  filter(concept == c("dress", "pants", "shirt", "socks", "shoes")) %>% 
+  filter(concept %in% c("dress", "pants", "shirt", "socks", "shoes")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -882,12 +1316,91 @@ semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
     group = "clothes"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_clothes_df <- semantic_distances_clothes_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_clothes_df <- semantic_distances_clothes_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+clothes_p_mat <- p_mat %>% 
+  filter(concept %in% c("dress", "pants", "shirt", "socks", "shoes"))
+
+#calc TV
+
+# Convert and reassign row names
+clothes_p_mat_fixed <- as.matrix(clothes_p_mat[, -1])
+rownames(clothes_p_mat_fixed) <- clothes_p_mat$concept
+
+#place to store TVs
+clothes_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in clothes_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- clothes_p_mat_fixed[concept1, ]
+  p_j2 <- clothes_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  clothes_tv_results[[length(clothes_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+clothes_tv_df <- do.call(rbind, clothes_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+clothes_tv_df$group_nTV <- clothes_tv_df$TV / sum(clothes_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
+  left_join(clothes_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #scenes
 scenes <- ratings_trials_exp %>% 
-  filter(concept == c("beach", "field", "ocean", "sky", "sunset")) %>% 
+  filter(concept %in% c("beach", "field", "ocean", "sky", "sunset")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -958,12 +1471,91 @@ semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
     group = "scenes"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_scenes_df <- semantic_distances_scenes_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_scenes_df <- semantic_distances_scenes_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+scenes_p_mat <- p_mat %>% 
+  filter(concept %in% c("beach", "field", "ocean", "sky", "sunset"))
+
+#calc TV
+
+# Convert and reassign row names
+scenes_p_mat_fixed <- as.matrix(scenes_p_mat[, -1])
+rownames(scenes_p_mat_fixed) <- scenes_p_mat$concept
+
+#place to store TVs
+scenes_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in scenes_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- scenes_p_mat_fixed[concept1, ]
+  p_j2 <- scenes_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  scenes_tv_results[[length(scenes_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+scenes_tv_df <- do.call(rbind, scenes_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+scenes_tv_df$group_nTV <- scenes_tv_df$TV / sum(scenes_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
+  left_join(scenes_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #emotions
 emotions <- ratings_trials_exp %>% 
-  filter(concept == c("angry", "disgust", "fearful", "happy", "sad")) %>% 
+  filter(concept %in% c("angry", "disgust", "fearful", "happy", "sad")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -1034,12 +1626,91 @@ semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
     group = "emotions"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_emotions_df <- semantic_distances_emotions_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_emotions_df <- semantic_distances_emotions_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+emotions_p_mat <- p_mat %>% 
+  filter(concept %in% c("angry", "disgust", "fearful", "happy", "sad"))
+
+#calc TV
+
+# Convert and reassign row names
+emotions_p_mat_fixed <- as.matrix(emotions_p_mat[, -1])
+rownames(emotions_p_mat_fixed) <- emotions_p_mat$concept
+
+#place to store TVs
+emotions_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in emotions_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- emotions_p_mat_fixed[concept1, ]
+  p_j2 <- emotions_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  emotions_tv_results[[length(emotions_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+emotions_tv_df <- do.call(rbind, emotions_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+emotions_tv_df$group_nTV <- emotions_tv_df$TV / sum(emotions_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
+  left_join(emotions_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #values
 values <- ratings_trials_exp %>% 
-  filter(concept == c("evil", "greed", "justice", "love", "peace")) %>% 
+  filter(concept %in% c("evil", "greed", "justice", "love", "peace")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -1110,20 +1781,99 @@ semantic_distances_values_df <- semantic_distances_values_df %>%
     group = "values"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_values_df <- semantic_distances_values_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_values_df <- semantic_distances_values_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_values_df <- semantic_distances_values_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_values_df <- semantic_distances_values_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+values_p_mat <- p_mat %>% 
+  filter(concept %in% c("evil", "greed", "justice", "love", "peace"))
+
+#calc TV
+
+# Convert and reassign row names
+values_p_mat_fixed <- as.matrix(values_p_mat[, -1])
+rownames(values_p_mat_fixed) <- values_p_mat$concept
+
+#place to store TVs
+values_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in values_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- values_p_mat_fixed[concept1, ]
+  p_j2 <- values_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  values_tv_results[[length(values_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+values_tv_df <- do.call(rbind, values_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+values_tv_df$group_nTV <- values_tv_df$TV / sum(values_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_values_df <- semantic_distances_values_df %>%
+  left_join(values_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
-#carquals
-carquals <- ratings_trials_exp %>% 
-  filter(concept == c("comfort", "efficiency", "speed", "safety", "reliability")) %>% 
+#qualities
+qualities <- ratings_trials_exp %>% 
+  filter(concept %in% c("comfort", "efficiency", "speed", "safety", "reliability")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
 # Generate all concept pairs
-carquals_concepts <- unique(carquals$concept)
-carquals_concept_pairs <- combn(carquals_concepts, 2, simplify = FALSE) 
+qualities_concepts <- unique(qualities$concept)
+qualities_concept_pairs <- combn(qualities_concepts, 2, simplify = FALSE) 
 
-carquals_reshaped <- carquals %>%
+qualities_reshaped <- qualities %>%
   spread(key = concept, value = AverageRatings)
 
 # Initialize a dataframe to store results
@@ -1137,7 +1887,7 @@ semantic_distances_df <- data.frame(
 )
 
 # Loop through each concept pair
-for (pair in carquals_concept_pairs){
+for (pair in qualities_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
@@ -1146,10 +1896,10 @@ for (pair in carquals_concept_pairs){
     # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
     if (texture1 != texture2) {
       # Extract ratings
-    concept1_texture1_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(carquals_reshaped[carquals_reshaped$texture == texture2, pair[1]]) # X3
+    concept1_texture1_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture2, pair[1]]) # X3
     
     # Ensure no missing values
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
@@ -1177,21 +1927,99 @@ for (pair in carquals_concept_pairs){
 }
 
 # Add identifier column with all the info
-semantic_distances_carquals_df <- semantic_distances_df %>%
+semantic_distances_qualities_df <- semantic_distances_df %>%
   mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
 
 #add group name column
-semantic_distances_carquals_df <- semantic_distances_carquals_df %>% 
+semantic_distances_qualities_df <- semantic_distances_qualities_df %>% 
   mutate(
-    group = "carquals"
+    group = "qualities"
   )
+
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_qualities_df <- semantic_distances_qualities_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_qualities_df <- semantic_distances_qualities_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+qualities_p_mat <- p_mat %>% 
+  filter(concept %in% c("comfort", "efficiency", "speed", "safety", "reliability"))
+
+#calc TV
+
+# Convert and reassign row names
+qualities_p_mat_fixed <- as.matrix(qualities_p_mat[, -1])
+rownames(qualities_p_mat_fixed) <- qualities_p_mat$concept
+
+#place to store TVs
+qualities_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in qualities_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- qualities_p_mat_fixed[concept1, ]
+  p_j2 <- qualities_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  qualities_tv_results[[length(qualities_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+qualities_tv_df <- do.call(rbind, qualities_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+qualities_tv_df$group_nTV <- qualities_tv_df$TV / sum(qualities_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
+  left_join(qualities_tv_df, by = c("concept1", "concept2"))
+
 
 ```
 
 ```{r}
 #location
 location <- ratings_trials_exp %>% 
-  filter(concept == c("above", "below", "beside", "near", "far")) %>% 
+  filter(concept %in% c("above", "below", "beside", "near", "far")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -1262,12 +2090,90 @@ semantic_distances_location_df <- semantic_distances_location_df %>%
     group = "location"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_location_df <- semantic_distances_location_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_location_df <- semantic_distances_location_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_location_df <- semantic_distances_location_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_location_df <- semantic_distances_location_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+location_p_mat <- p_mat %>% 
+  filter(concept %in% c("above", "below", "beside", "near", "far"))
+
+#calc TV
+
+# Convert and reassign row names
+location_p_mat_fixed <- as.matrix(location_p_mat[, -1])
+rownames(location_p_mat_fixed) <- location_p_mat$concept
+
+#place to store TVs
+location_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in location_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- location_p_mat_fixed[concept1, ]
+  p_j2 <- location_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  location_tv_results[[length(location_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+location_tv_df <- do.call(rbind, location_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+location_tv_df$group_nTV <- location_tv_df$TV / sum(location_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_location_df <- semantic_distances_location_df %>%
+  left_join(location_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #time
 time <- ratings_trials_exp %>% 
-  filter(concept == c("dawn", "day", "dusk", "night", "noon")) %>% 
+  filter(concept %in% c("dawn", "day", "dusk", "night", "noon")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -1338,12 +2244,91 @@ semantic_distances_time_df <- semantic_distances_time_df %>%
     group = "time"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_time_df <- semantic_distances_time_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_time_df <- semantic_distances_time_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_time_df <- semantic_distances_time_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_time_df <- semantic_distances_time_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+time_p_mat <- p_mat %>% 
+  filter(concept %in% c("dawn", "day", "dusk", "night", "noon"))
+
+#calc TV
+
+# Convert and reassign row names
+time_p_mat_fixed <- as.matrix(time_p_mat[, -1])
+rownames(time_p_mat_fixed) <- time_p_mat$concept
+
+#place to store TVs
+time_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in time_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- time_p_mat_fixed[concept1, ]
+  p_j2 <- time_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  time_tv_results[[length(time_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+time_tv_df <- do.call(rbind, time_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+time_tv_df$group_nTV <- time_tv_df$TV / sum(time_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_time_df <- semantic_distances_time_df %>%
+  left_join(time_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #transport
 transport <- ratings_trials_exp %>% 
-  filter(concept == c("airplane", "car", "boat", "truck", "train")) %>% 
+  filter(concept %in% c("airplane", "car", "boat", "truck", "train")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -1414,12 +2399,91 @@ semantic_distances_transport_df <- semantic_distances_transport_df %>%
     group = "transport"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_transport_df <- semantic_distances_transport_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_transport_df <- semantic_distances_transport_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_transport_df <- semantic_distances_transport_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_transport_df <- semantic_distances_transport_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+transport_p_mat <- p_mat %>% 
+  filter(concept %in% c("airplane", "car", "boat", "truck", "train"))
+
+#calc TV
+
+# Convert and reassign row names
+transport_p_mat_fixed <- as.matrix(transport_p_mat[, -1])
+rownames(transport_p_mat_fixed) <- transport_p_mat$concept
+
+#place to store TVs
+transport_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in transport_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- transport_p_mat_fixed[concept1, ]
+  p_j2 <- transport_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  transport_tv_results[[length(transport_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+transport_tv_df <- do.call(rbind, transport_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+transport_tv_df$group_nTV <- transport_tv_df$TV / sum(transport_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_transport_df <- semantic_distances_transport_df %>%
+  left_join(transport_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 ```{r}
 #activity
 activity <- ratings_trials_exp %>% 
-  filter(concept == c("driving", "eating", "sleeping", "leisure", "working")) %>% 
+  filter(concept %in% c("driving", "eating", "sleeping", "leisure", "working")) %>% 
   group_by(concept, texture) %>% 
   summarize(AverageRatings = mean(response), .groups = "drop")
 
@@ -1490,6 +2554,395 @@ semantic_distances_activity_df <- semantic_distances_activity_df %>%
     group = "activity"
   )
 
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_activity_df <- semantic_distances_activity_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_activity_df <- semantic_distances_activity_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_activity_df <- semantic_distances_activity_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_activity_df <- semantic_distances_activity_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+activity_p_mat <- p_mat %>% 
+  filter(concept %in% c("driving", "eating", "sleeping", "leisure", "working"))
+
+#calc TV
+
+# Convert and reassign row names
+activity_p_mat_fixed <- as.matrix(activity_p_mat[, -1])
+rownames(activity_p_mat_fixed) <- activity_p_mat$concept
+
+#place to store TVs
+activity_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in activity_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- activity_p_mat_fixed[concept1, ]
+  p_j2 <- activity_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  activity_tv_results[[length(activity_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+activity_tv_df <- do.call(rbind, activity_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+activity_tv_df$group_nTV <- activity_tv_df$TV / sum(activity_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_activity_df <- semantic_distances_activity_df %>%
+  left_join(activity_tv_df, by = c("concept1", "concept2"))
+
+
+```
+
+```{r}
+#concrete ---- still need to decide
+concrete <- ratings_trials_exp %>% 
+  filter(concept %in% c("corn", "carrot", "eggplant", "celery", "grape", "banana", "peach", "cherry")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+concrete_concepts <- unique(concrete$concept)
+concrete_concept_pairs <- combn(concrete_concepts, 2, simplify = FALSE) 
+
+concrete_reshaped <- concrete %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in concrete_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(concrete_reshaped[concrete_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(concrete_reshaped[concrete_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(concrete_reshaped[concrete_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(concrete_reshaped[concrete_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_concrete_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_concrete_df <- semantic_distances_concrete_df %>% 
+  mutate(
+    group = "concrete"
+  )
+
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_concrete_df <- semantic_distances_concrete_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_concrete_df <- semantic_distances_concrete_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_concrete_df <- semantic_distances_concrete_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_concrete_df <- semantic_distances_concrete_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+concrete_p_mat <- p_mat %>% 
+  filter(concept %in% c("corn", "carrot", "eggplant", "celery", "grape", "banana", "peach", "cherry"))
+
+#calc TV
+
+# Convert and reassign row names
+concrete_p_mat_fixed <- as.matrix(concrete_p_mat[, -1])
+rownames(concrete_p_mat_fixed) <- concrete_p_mat$concept
+
+#place to store TVs
+concrete_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in concrete_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- concrete_p_mat_fixed[concept1, ]
+  p_j2 <- concrete_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  concrete_tv_results[[length(concrete_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+concrete_tv_df <- do.call(rbind, concrete_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+concrete_tv_df$group_nTV <- concrete_tv_df$TV / sum(concrete_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_concrete_df <- semantic_distances_concrete_df %>%
+  left_join(concrete_tv_df, by = c("concept1", "concept2"))
+
+
+```
+
+```{r}
+#abstract --- still need to decide
+abstract <- ratings_trials_exp %>% 
+  filter(concept %in% c("sleeping", "driving", "working", "leisure", "efficiency", "speed", "safety", "comfort")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+abstract_concepts <- unique(abstract$concept)
+abstract_concept_pairs <- combn(abstract_concepts, 2, simplify = FALSE) 
+
+abstract_reshaped <- abstract %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each concept pair
+for (pair in abstract_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+    
+    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+    if (texture1 != texture2) {
+      # Extract ratings
+    concept1_texture1_rating <- as.numeric(abstract_reshaped[abstract_reshaped$texture == texture1, pair[1]]) # X1
+    concept1_texture2_rating <- as.numeric(abstract_reshaped[abstract_reshaped$texture == texture2, pair[2]]) # X4
+    concept2_texture1_rating <- as.numeric(abstract_reshaped[abstract_reshaped$texture == texture1, pair[2]]) # X2
+    concept2_texture2_rating <- as.numeric(abstract_reshaped[abstract_reshaped$texture == texture2, pair[1]]) # X3
+    
+    # Ensure no missing values
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                        concept2_texture1_rating, concept1_texture2_rating)))) {
+        
+        # Compute semantic distance
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
+          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+        )
+        
+        # Append result to dataframe
+        semantic_distances_df <- rbind(semantic_distances_df, 
+          data.frame(
+            concept1 = pair[1], 
+            concept2 = pair[2], 
+            texture1 = texture1, 
+            texture2 = texture2, 
+            semantic_distance = result$semantic_distance
+          )
+        )
+      }
+    }
+  }
+}
+
+# Add identifier column with all the info
+semantic_distances_abstract_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_abstract_df <- semantic_distances_abstract_df %>% 
+  mutate(
+    group = "abstract"
+  )
+
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_abstract_df <- semantic_distances_abstract_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_abstract_df <- semantic_distances_abstract_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_abstract_df <- semantic_distances_abstract_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_abstract_df <- semantic_distances_abstract_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+abstract_p_mat <- p_mat %>% 
+  filter(concept %in% c("sleeping", "driving", "working", "leisure", "efficiency", "speed", "safety", "comfort"))
+
+#calc TV
+
+# Convert and reassign row names
+abstract_p_mat_fixed <- as.matrix(abstract_p_mat[, -1])
+rownames(abstract_p_mat_fixed) <- abstract_p_mat$concept
+
+#place to store TVs
+abstract_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in abstract_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- abstract_p_mat_fixed[concept1, ]
+  p_j2 <- abstract_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  abstract_tv_results[[length(abstract_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+#combine into a data frame
+abstract_tv_df <- do.call(rbind, abstract_tv_results)
+
+
+#add column of normalized TV within fruits if want for seperate model
+abstract_tv_df$group_nTV <- abstract_tv_df$TV / sum(abstract_tv_df$TV)
+
+#add TVs to main dataframe
+semantic_distances_abstract_df <- semantic_distances_abstract_df %>%
+  left_join(abstract_tv_df, by = c("concept1", "concept2"))
+
+
 ```
 
 
@@ -1511,7 +2964,7 @@ semantic_distances_emotions_df <- merge(semantic_distances_emotions_df, percept_
 
 semantic_distances_values_df <- merge(semantic_distances_values_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
 
-semantic_distances_carquals_df <- merge(semantic_distances_carquals_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+semantic_distances_qualities_df <- merge(semantic_distances_qualities_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
 
 semantic_distances_location_df <- merge(semantic_distances_location_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
 
@@ -1520,9 +2973,11 @@ semantic_distances_time_df <- merge(semantic_distances_time_df, percept_distance
 semantic_distances_transport_df <- merge(semantic_distances_transport_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
 
 semantic_distances_activity_df <- merge(semantic_distances_activity_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
+```
 
-
+```{r}
 #save semantic distance data frames as separate csv's
+
 write.csv(semantic_distances_animals_df, "semantic_distances/animals.csv", row.names = FALSE)
 #semantic_distances_animals_df
 
@@ -1547,7 +3002,7 @@ write.csv(semantic_distances_emotions_df, "semantic_distances/emotions.csv", row
 write.csv(semantic_distances_values_df, "semantic_distances/values.csv", row.names = FALSE)
 #semantic_distances_values_df
 
-write.csv(semantic_distances_carquals_df, "semantic_distances/carquals.csv", row.names = FALSE)
+write.csv(semantic_distances_qualities_df, "semantic_distances/qualities.csv", row.names = FALSE)
 #semantic_distances_carquals_df
 
 write.csv(semantic_distances_location_df, "semantic_distances/location.csv", row.names = FALSE)
@@ -1566,6 +3021,23 @@ write.csv(semantic_distances_activity_df, "semantic_distances/activity.csv", row
 
 #save combined semantic distances data frame
 ```
+
+
+#Models
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
 
 ```{r}
 # Function to plot semantic distances and calculate MSE
