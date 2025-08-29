@@ -343,10 +343,9 @@ print(paste0("Plots saved to: ", plot_output_dir))
 
 ```
 
+#Get entropies for each texture-concept association distribution
 
-#Get entropies for each texture-concept association distribution 
-
-Function for calculating entropy of each concept's distribution, takes a matrix where each concept is a row and each texture is a column with values as the average association rating for each pair. 
+Function for calculating entropy of each concept's distribution, takes a matrix where each concept is a row and each texture is a column with values as the average association rating for each pair.
 
 ```{r}
 
@@ -361,7 +360,6 @@ get_ents<-function(x){
 }
 
 ```
-
 
 ```{r}
 #define matrix structured tibble to plug into function for entropy values
@@ -384,7 +382,6 @@ class(p_mat$concept)
 
 
 ```
-
 
 ```{r}
 #loop for normalizing ratings values
@@ -424,25 +421,15 @@ entropies_df <- tibble(
 
 ```
 
-
-
 # Doubles
 
 We operationalized semantic discriminability using the metric semantic distance
 
-Semantic distance:
-- assumed associations ratings between features and concepts are normally distributed with a mean equal to the mean association rating and variance that is largest when the association rating is closest to the center of the rating scale. 
-- defined: in an assignment, the absolute difference in the probabilities of each assignment being chosen by a random individual. 
-  - delta_x = (x1 + x4) - (x2 + x3)
-  - x1 = average association strength between feature 1 and concept 1
-  - x2 = average association strength between feature 2 and concept 2
-  - x3 = average association strength between feature 1 and concept 2
-  - x4 = average association strength between feature 2 and concept 1
-  
-If delta_x > 0 then feature 1 will be assigned with concept 1 and feature 2 will be assigned with concept 2.
-If delta_x < 0 then feature 1 will be assigned with concept 2 and feature 2 will be assigned with concept 1. 
+Semantic distance: - assumed associations ratings between features and concepts are normally distributed with a mean equal to the mean association rating and variance that is largest when the association rating is closest to the center of the rating scale. - defined: in an assignment, the absolute difference in the probabilities of each assignment being chosen by a random individual. - delta_x = (x1 + x4) - (x2 + x3) - x1 = average association strength between feature 1 and concept 1 - x2 = average association strength between feature 2 and concept 2 - x3 = average association strength between feature 1 and concept 2 - x4 = average association strength between feature 2 and concept 1
 
-  - delta_x = |Prob(delta_x>0) - Prob(delta_x <0)|
+If delta_x \> 0 then feature 1 will be assigned with concept 1 and feature 2 will be assigned with concept 2. If delta_x \< 0 then feature 1 will be assigned with concept 2 and feature 2 will be assigned with concept 1.
+
+-   delta_x = \|Prob(delta_x\>0) - Prob(delta_x \<0)\|
 
 ```{r}
 #semantic distance function 
@@ -485,9 +472,7 @@ textures <- tibble(texture = unique(unlist(ratings_trials_exp$texture)))
 texture_pairs <- combn(textures$texture, 2, simplify = FALSE)
 ```
 
-
-
-Perceptual distance - operationalized as the euclidean distance between visual textures in the raw embedding space estimated with Salmon in our triplet study. 
+Perceptual distance - operationalized as the euclidean distance between visual textures in the raw embedding space estimated with Salmon in our triplet study.
 
 ```{r}
 #perceptual distance for each texture pair
@@ -607,21 +592,22 @@ for (i in seq_along(texture_pairs)) {
 # head(combinations_53_choose_8_parallel)
 ```
 
-Break concepts into related groups (concepts which may reasonably appear in the same visualization) and calculate semantic distances, max capacity for semantic discriminability, mean entropy, and total variance (TV) for every combination of two concepts in that group and two textures. 
+Break concepts into related groups (concepts which may reasonably appear in the same visualization) and calculate semantic distances, max capacity for semantic discriminability, mean entropy, and total variance (TV) for every combination of two concepts in that group and two textures.
 
-  - We defined 13 groups of concepts (fruits, vegetables, animals, weather, clothes, scenes, emotions, values, car qualities, relative locations, time of day, modes of transportation, and activities)
-  
-  - Also defined a set of concrete and a set of abstract concepts
+-   We defined 13 groups of concepts (fruits, vegetables, animals, weather, clothes, scenes, emotions, values, car qualities, relative locations, time of day, modes of transportation, and activities)
 
-Function for Total Variation  
+-   Also defined a set of concrete and a set of abstract concepts
+
+Function for Total Variation
+
 ```{r}
 #TV
 total_variation <- function(p_j1, p_j2) {
   0.5 * sum(abs(p_j1 - p_j2))
 }
 ```
-  
-  
+
+#Fruits
 
 ```{r}
 #fruits
@@ -647,45 +633,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(fruits_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in fruits_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(fruits_reshaped[fruits_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_fruits_df <- semantic_distances_df %>%
@@ -712,12 +701,12 @@ semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -769,15 +758,161 @@ fruits_tv_df <- do.call(rbind, fruits_tv_results)
 
 
 #add column of normalized TV within fruits if want for seperate model
-fruits_tv_df$group_nTV <- fruits_tv_df$TV / sum(fruits_tv_df$TV)
+#fruits_tv_df$group_nTV <- fruits_tv_df$TV / sum(fruits_tv_df$TV)
 
-#add TVs to main dataframe
+fruits_tv_df$nTV <- (fruits_tv_df$TV - min(fruits_tv_df$TV)) / (max(fruits_tv_df$TV) - min(fruits_tv_df$TV))
+
+#add TVs to main data frame
 semantic_distances_fruits_df <- semantic_distances_fruits_df %>%
   left_join(fruits_tv_df, by = c("concept1", "concept2"))
 
+
+#normalize entropy across pairs
+#semantic_distances_fruits_df$group_n_mean_entropy <-  semantic_distances_fruits_df$mean_entropy/sum(semantic_distances_fruits_df$mean_entropy)
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_fruits_df$group_specificity <- 1 - semantic_distances_fruits_df$group_n_mean_entropy
+
+#add concept pair identifiers
+semantic_distances_fruits_df$concept_pair <- paste(semantic_distances_fruits_df$concept1, semantic_distances_fruits_df$concept2, sep = "_")
+
 ```
 
+#Models
 
+```{r}
+#model data frame
+semantic_distances_fruits_model <- semantic_distances_fruits_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_context_model <- semantic_distances_context_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_fruits_model$n_mean_entropy <- (semantic_distances_fruits_model$mean_entropy - min(semantic_distances_fruits_model$mean_entropy)) / (max(semantic_distances_fruits_model$mean_entropy) - min(semantic_distances_fruits_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_fruits_model$specificity <- 1 - semantic_distances_fruits_model$n_mean_entropy
+
+#mean center
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+fruits_spec_cap_corr <- cor.test(semantic_distances_fruits_model$specificity, semantic_distances_fruits_model$max_capacity, method = "pearson")
+
+print(fruits_spec_cap_corr)
+
+```
+
+```{r}
+
+fruits_diff_cap_corr <- cor.test(semantic_distances_fruits_model$nTV, semantic_distances_fruits_model$max_capacity, method = "pearson")
+
+print(fruits_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_fruits_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_fruits_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_fruits1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_fruits_model)
+summary(m_fruits1)
+car::Anova(m_fruits1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_fruits1, type = 3))
+rockchalk::getDeltaRsquare(m_fruits1)
+```
+
+```{r}
+m_fruits2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_fruits_model)
+summary(m_fruits2)
+```
+
+```{r}
+car::Anova(m_fruits2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_fruits2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_fruits2)
+```
+
+#Veggies
 
 ```{r}
 #veggies
@@ -803,45 +938,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(veggies_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in veggies_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(veggies_reshaped[veggies_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_veggies_df <- semantic_distances_df %>%
@@ -867,12 +1005,12 @@ semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -931,7 +1069,166 @@ semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
   left_join(veggies_tv_df, by = c("concept1", "concept2"))
 
 
+#add column of normalized TV so they vary from 0 to 1
+#veggies_tv_df$nTV <- veggies_tv_df$TV / sum(veggies_tv_df$TV)
+
+veggies_tv_df$nTV <- (veggies_tv_df$TV - min(veggies_tv_df$TV)) / (max(veggies_tv_df$TV) - min(veggies_tv_df$TV))
+
+
+#add TVs to main data frame
+semantic_distances_veggies_df <- semantic_distances_veggies_df %>%
+  left_join(veggies_tv_df, by = c("concept1", "concept2"))
+
+
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_veggies_df$n_mean_entropy <-  semantic_distances_veggies_df$mean_entropy/sum(semantic_distances_veggies_df$mean_entropy)
+
+#semantic_distances_veggies_df$n_mean_entropy <- (semantic_distances_veggies_df$mean_entropy - min(semantic_distances_veggies_df$mean_entropy)) / #(max(semantic_distances_veggies_df$mean_entropy) - min(semantic_distances_veggies_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_veggies_df$specificity <- 1 - semantic_distances_veggies_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_veggies_df$concept_pair <- paste(semantic_distances_veggies_df$concept1, semantic_distances_veggies_df$concept2, sep = "_")
+
 ```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_veggies_model <- semantic_distances_veggies_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_veggies_model <- semantic_distances_veggies_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_veggies_model$n_mean_entropy <- (semantic_distances_veggies_model$mean_entropy - min(semantic_distances_veggies_model$mean_entropy)) / (max(semantic_distances_veggies_model$mean_entropy) - min(semantic_distances_veggies_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_veggies_model$specificity <- 1 - semantic_distances_veggies_model$n_mean_entropy
+
+#mean center
+semantic_distances_veggies_model <- semantic_distances_veggies_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_veggies_model <- semantic_distances_veggies_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_veggies_model <- semantic_distances_veggies_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+veggies_spec_cap_corr <- cor.test(semantic_distances_veggies_model$specificity, semantic_distances_veggies_model$max_capacity, method = "pearson")
+
+print(veggies_spec_cap_corr)
+
+```
+
+```{r}
+
+veggies_diff_cap_corr <- cor.test(semantic_distances_veggies_model$nTV, semantic_distances_veggies_model$max_capacity, method = "pearson")
+
+print(veggies_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_veggies_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_veggies_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_veggies1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_veggies_model)
+summary(m_veggies1)
+car::Anova(m_veggies1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_veggies1, type = 3))
+rockchalk::getDeltaRsquare(m_veggies1)
+```
+
+```{r}
+m_veggies2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_veggies_model)
+summary(m_veggies2)
+```
+
+```{r}
+car::Anova(m_veggies2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_veggies2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_veggies2)
+```
+
+#Animals
 
 ```{r}
 #animals
@@ -957,45 +1254,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(animals_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in animals_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(animals_reshaped[animals_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_animals_df <- semantic_distances_df %>%
@@ -1021,12 +1321,12 @@ semantic_distances_animals_df <- semantic_distances_animals_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_animals_df <- semantic_distances_animals_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_animals_df <- semantic_distances_animals_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -1081,10 +1381,168 @@ animals_tv_df <- do.call(rbind, animals_tv_results)
 animals_tv_df$group_nTV <- animals_tv_df$TV / sum(animals_tv_df$TV)
 
 #add TVs to main dataframe
+#semantic_distances_animals_df <- semantic_distances_animals_df %>%
+#  left_join(animals_tv_df, by = c("concept1", "concept2"))
+
+
+#add column of normalized TV so they vary from 0 to 1
+#animals_tv_df$nTV <- animals_tv_df$TV / sum(animals_tv_df$TV)
+
+animals_tv_df$nTV <- (animals_tv_df$TV - min(animals_tv_df$TV)) / (max(animals_tv_df$TV) - min(animals_tv_df$TV))
+
+
+#add TVs to main data frame
 semantic_distances_animals_df <- semantic_distances_animals_df %>%
   left_join(animals_tv_df, by = c("concept1", "concept2"))
 
 
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_animals_df$n_mean_entropy <-  semantic_distances_animals_df$mean_entropy/sum(semantic_distances_animals_df$mean_entropy)
+
+#semantic_distances_animals_df$n_mean_entropy <- (semantic_distances_animals_df$mean_entropy - min(semantic_distances_animals_df$mean_entropy)) / #(max(semantic_distances_veggies_df$mean_entropy) - min(semantic_distances_veggies_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_animals_df$specificity <- 1 - semantic_distances_animals_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_animals_df$concept_pair <- paste(semantic_distances_animals_df$concept1, semantic_distances_animals_df$concept2, sep = "_")
+
+
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_animals_model <- semantic_distances_animals_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_animals_model <- semantic_distances_animals_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_animals_model$n_mean_entropy <- (semantic_distances_animals_model$mean_entropy - min(semantic_distances_animals_model$mean_entropy)) / (max(semantic_distances_animals_model$mean_entropy) - min(semantic_distances_animals_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_animals_model$specificity <- 1 - semantic_distances_animals_model$n_mean_entropy
+
+#mean center
+semantic_distances_animals_model <- semantic_distances_animals_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_animals_model <- semantic_distances_animals_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_animals_model <- semantic_distances_animals_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+animals_spec_cap_corr <- cor.test(semantic_distances_animals_model$specificity, semantic_distances_animals_model$max_capacity, method = "pearson")
+
+print(animals_spec_cap_corr)
+
+```
+
+```{r}
+
+animals_diff_cap_corr <- cor.test(semantic_distances_animals_model$nTV, semantic_distances_animals_model$max_capacity, method = "pearson")
+
+print(animals_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_animals_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_animals_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_animals1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_animals_model)
+summary(m_animals1)
+car::Anova(m_animals1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_animals1, type = 3))
+rockchalk::getDeltaRsquare(m_animals1)
+```
+
+```{r}
+m_animals2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_animals_model)
+summary(m_animals2)
+```
+
+```{r}
+car::Anova(m_animals2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_animals2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_animals2)
 ```
 
 ```{r}
@@ -1111,45 +1569,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(weather_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in weather_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(weather_reshaped[weather_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_weather_df <- semantic_distances_df %>%
@@ -1176,12 +1637,12 @@ semantic_distances_weather_df <- semantic_distances_weather_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_weather_df <- semantic_distances_weather_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_weather_df <- semantic_distances_weather_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -1236,10 +1697,167 @@ weather_tv_df <- do.call(rbind, weather_tv_results)
 weather_tv_df$group_nTV <- weather_tv_df$TV / sum(weather_tv_df$TV)
 
 #add TVs to main dataframe
+#semantic_distances_weather_df <- semantic_distances_weather_df %>%
+#  left_join(weather_tv_df, by = c("concept1", "concept2"))
+
+#add column of normalized TV so they vary from 0 to 1
+#weather_tv_df$nTV <- weather_tv_df$TV / sum(weather_tv_df$TV)
+
+weather_tv_df$nTV <- (weather_tv_df$TV - min(weather_tv_df$TV)) / (max(weather_tv_df$TV) - min(weather_tv_df$TV))
+
+
+#add TVs to main data frame
 semantic_distances_weather_df <- semantic_distances_weather_df %>%
   left_join(weather_tv_df, by = c("concept1", "concept2"))
 
 
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_weather_df$n_mean_entropy <-  semantic_distances_weather_df$mean_entropy/sum(semantic_distances_weather_df$mean_entropy)
+
+#semantic_distances_weather_df$n_mean_entropy <- (semantic_distances_weather_df$mean_entropy - min(semantic_distances_weather_df$mean_entropy)) / #(max(semantic_distances_weather_df$mean_entropy) - min(semantic_distances_weather_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_weather_df$specificity <- 1 - semantic_distances_weather_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_weather_df$concept_pair <- paste(semantic_distances_weather_df$concept1, semantic_distances_weather_df$concept2, sep = "_")
+
+
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_weather_model <- semantic_distances_weather_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_weather_model <- semantic_distances_weather_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_weather_model$n_mean_entropy <- (semantic_distances_weather_model$mean_entropy - min(semantic_distances_weather_model$mean_entropy)) / (max(semantic_distances_weather_model$mean_entropy) - min(semantic_distances_weather_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_weather_model$specificity <- 1 - semantic_distances_weather_model$n_mean_entropy
+
+#mean center
+semantic_distances_weather_model <- semantic_distances_weather_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_weather_model <- semantic_distances_weather_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_weather_model <- semantic_distances_weather_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+weather_spec_cap_corr <- cor.test(semantic_distances_weather_model$specificity, semantic_distances_weather_model$max_capacity, method = "pearson")
+
+print(weather_spec_cap_corr)
+
+```
+
+```{r}
+
+weather_diff_cap_corr <- cor.test(semantic_distances_weather_model$nTV, semantic_distances_weather_model$max_capacity, method = "pearson")
+
+print(weather_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_weather_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_weather_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_weather1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_weather_model)
+summary(m_context1)
+car::Anova(m_weather1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_weather1, type = 3))
+rockchalk::getDeltaRsquare(m_weather1)
+```
+
+```{r}
+m_weather2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_weather_model)
+summary(m_weather2)
+```
+
+```{r}
+car::Anova(m_weather2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_weather2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_weather2)
 ```
 
 ```{r}
@@ -1266,45 +1884,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(clothes_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in clothes_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(clothes_reshaped[clothes_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_clothes_df <- semantic_distances_df %>%
@@ -1331,12 +1952,12 @@ semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -1391,10 +2012,168 @@ clothes_tv_df <- do.call(rbind, clothes_tv_results)
 clothes_tv_df$group_nTV <- clothes_tv_df$TV / sum(clothes_tv_df$TV)
 
 #add TVs to main dataframe
+#semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
+#  left_join(clothes_tv_df, by = c("concept1", "concept2"))
+
+
+#add column of normalized TV so they vary from 0 to 1
+#clothes_tv_df$nTV <- clothes_tv_df$TV / sum(clothes_tv_df$TV)
+
+clothes_tv_df$nTV <- (clothes_tv_df$TV - min(clothes_tv_df$TV)) / (max(clothes_tv_df$TV) - min(clothes_tv_df$TV))
+
+
+#add TVs to main data frame
 semantic_distances_clothes_df <- semantic_distances_clothes_df %>%
   left_join(clothes_tv_df, by = c("concept1", "concept2"))
 
 
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_clothes_df$n_mean_entropy <-  semantic_distances_clothes_df$mean_entropy/sum(semantic_distances_clothes_df$mean_entropy)
+
+#semantic_distances_clothes_df$n_mean_entropy <- (semantic_distances_clothes_df$mean_entropy - min(semantic_distances_clothes_df$mean_entropy)) / #(max(semantic_distances_clothes_df$mean_entropy) - min(semantic_distances_clothes_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_clothes_df$specificity <- 1 - semantic_distances_clothes_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_clothes_df$concept_pair <- paste(semantic_distances_clothes_df$concept1, semantic_distances_clothes_df$concept2, sep = "_")
+
+
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_clothes_model <- semantic_distances_clothes_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_clothes_model <- semantic_distances_clothes_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_clothes_model$n_mean_entropy <- (semantic_distances_clothes_model$mean_entropy - min(semantic_distances_clothes_model$mean_entropy)) / (max(semantic_distances_clothes_model$mean_entropy) - min(semantic_distances_clothes_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_clothes_model$specificity <- 1 - semantic_distances_clothes_model$n_mean_entropy
+
+#mean center
+semantic_distances_clothes_model <- semantic_distances_clothes_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_clothes_model <- semantic_distances_clothes_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_clothes_model <- semantic_distances_clothes_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+clothes_spec_cap_corr <- cor.test(semantic_distances_clothes_model$specificity, semantic_distances_clothes_model$max_capacity, method = "pearson")
+
+print(clothes_spec_cap_corr)
+
+```
+
+```{r}
+
+clothes_diff_cap_corr <- cor.test(semantic_distances_clothes_model$nTV, semantic_distances_clothes_model$max_capacity, method = "pearson")
+
+print(clothes_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_clothes_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_clothes_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_clothes1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_clothes_model)
+summary(m_clothes1)
+car::Anova(m_clothes1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_clothes1, type = 3))
+rockchalk::getDeltaRsquare(m_clothes1)
+```
+
+```{r}
+m_clothes2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_clothes_model)
+summary(m_clothes2)
+```
+
+```{r}
+car::Anova(m_clothes2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_clothes2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_clothes2)
 ```
 
 ```{r}
@@ -1421,45 +2200,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(scenes_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in scenes_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(scenes_reshaped[scenes_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_scenes_df <- semantic_distances_df %>%
@@ -1486,12 +2268,12 @@ semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -1546,10 +2328,167 @@ scenes_tv_df <- do.call(rbind, scenes_tv_results)
 scenes_tv_df$group_nTV <- scenes_tv_df$TV / sum(scenes_tv_df$TV)
 
 #add TVs to main dataframe
+#semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
+#  left_join(scenes_tv_df, by = c("concept1", "concept2"))
+
+#add column of normalized TV so they vary from 0 to 1
+#scenes_tv_df$nTV <- scenes_tv_df$TV / sum(scenes_tv_df$TV)
+
+scenes_tv_df$nTV <- (scenes_tv_df$TV - min(scenes_tv_df$TV)) / (max(scenes_tv_df$TV) - min(scenes_tv_df$TV))
+
+
+#add TVs to main data frame
 semantic_distances_scenes_df <- semantic_distances_scenes_df %>%
   left_join(scenes_tv_df, by = c("concept1", "concept2"))
 
 
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_scenes_df$n_mean_entropy <-  semantic_distances_scenes_df$mean_entropy/sum(semantic_distances_scenes_df$mean_entropy)
+
+#semantic_distances_clothes_df$n_mean_entropy <- (semantic_distances_scenes_df$mean_entropy - min(semantic_distances_scenes_df$mean_entropy)) / #(max(semantic_distances_scenes_df$mean_entropy) - min(semantic_distances_scenes_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_clothes_df$specificity <- 1 - semantic_distances_clothes_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_scenes_df$concept_pair <- paste(semantic_distances_scenes_df$concept1, semantic_distances_scenes_df$concept2, sep = "_")
+
+
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_scenes_model <- semantic_distances_scenes_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_scenes_model <- semantic_distances_scenes_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_scenes_model$n_mean_entropy <- (semantic_distances_scenes_model$mean_entropy - min(semantic_distances_scenes_model$mean_entropy)) / (max(semantic_distances_scenes_model$mean_entropy) - min(semantic_distances_scenes_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_scenes_model$specificity <- 1 - semantic_distances_scenes_model$n_mean_entropy
+
+#mean center
+semantic_distances_scenes_model <- semantic_distances_scenes_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_scenes_model <- semantic_distances_scenes_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_scenes_model <- semantic_distances_scenes_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+scenes_spec_cap_corr <- cor.test(semantic_distances_scenes_model$specificity, semantic_distances_scenes_model$max_capacity, method = "pearson")
+
+print(scenes_spec_cap_corr)
+
+```
+
+```{r}
+
+scenes_diff_cap_corr <- cor.test(semantic_distances_scenes_model$nTV, semantic_distances_scenes_model$max_capacity, method = "pearson")
+
+print(scenes_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_scenes_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_scenes_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_scenes1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_scenes_model)
+summary(m_scenes1)
+car::Anova(m_scenes1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_scenes1, type = 3))
+rockchalk::getDeltaRsquare(m_scenes1)
+```
+
+```{r}
+m_scenes2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_scenes_model)
+summary(m_scenes2)
+```
+
+```{r}
+car::Anova(m_scenes2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_scenes2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_scenes2)
 ```
 
 ```{r}
@@ -1576,45 +2515,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(emotions_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in emotions_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(emotions_reshaped[emotions_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_emotions_df <- semantic_distances_df %>%
@@ -1641,12 +2583,12 @@ semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -1701,10 +2643,168 @@ emotions_tv_df <- do.call(rbind, emotions_tv_results)
 emotions_tv_df$group_nTV <- emotions_tv_df$TV / sum(emotions_tv_df$TV)
 
 #add TVs to main dataframe
+#semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
+#  left_join(emotions_tv_df, by = c("concept1", "concept2"))
+
+
+#add column of normalized TV so they vary from 0 to 1
+#emotions_tv_df$nTV <- emotions_tv_df$TV / sum(emotions_tv_df$TV)
+
+emotions_tv_df$nTV <- (emotions_tv_df$TV - min(emotions_tv_df$TV)) / (max(emotions_tv_df$TV) - min(emotions_tv_df$TV))
+
+
+#add TVs to main data frame
 semantic_distances_emotions_df <- semantic_distances_emotions_df %>%
   left_join(emotions_tv_df, by = c("concept1", "concept2"))
 
 
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_emotions_df$n_mean_entropy <-  semantic_distances_emotions_df$mean_entropy/sum(semantic_distances_emotions_df$mean_entropy)
+
+#semantic_distances_emotions_df$n_mean_entropy <- (semantic_distances_emotions_df$mean_entropy - min(semantic_distances_emotions_df$mean_entropy)) / #(max(semantic_distances_emotions_df$mean_entropy) - min(semantic_distances_emotions_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_emotions_df$specificity <- 1 - semantic_distances_emotions_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_emotions_df$concept_pair <- paste(semantic_distances_emotions_df$concept1, semantic_distances_emotions_df$concept2, sep = "_")
+
+
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_emotions_model <- semantic_distances_emotions_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_emotions_model <- semantic_distances_emotions_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_emotions_model$n_mean_entropy <- (semantic_distances_emotions_model$mean_entropy - min(semantic_distances_emotions_model$mean_entropy)) / (max(semantic_distances_emotions_model$mean_entropy) - min(semantic_distances_emotions_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_emotions_model$specificity <- 1 - semantic_distances_emotions_model$n_mean_entropy
+
+#mean center
+semantic_distances_emotions_model <- semantic_distances_emotions_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_emotions_model <- semantic_distances_emotions_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_emotions_model <- semantic_distances_emotions_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+emotions_spec_cap_corr <- cor.test(semantic_distances_emotions_model$specificity, semantic_distances_emotions_model$max_capacity, method = "pearson")
+
+print(emotions_spec_cap_corr)
+
+```
+
+```{r}
+
+emotions_diff_cap_corr <- cor.test(semantic_distances_emotions_model$nTV, semantic_distances_emotions_model$max_capacity, method = "pearson")
+
+print(emotions_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_emotions_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_emotions_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_emotions1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_emotions_model)
+summary(m_emotions1)
+car::Anova(m_emotions1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_emotions1, type = 3))
+rockchalk::getDeltaRsquare(m_emotions1)
+```
+
+```{r}
+m_emotions2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_emotions_model)
+summary(m_emotions2)
+```
+
+```{r}
+car::Anova(m_emotions2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_emotions2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_emotions2)
 ```
 
 ```{r}
@@ -1731,45 +2831,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(values_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in values_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(values_reshaped[values_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_values_df <- semantic_distances_df %>%
@@ -1796,12 +2899,12 @@ semantic_distances_values_df <- semantic_distances_values_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_values_df <- semantic_distances_values_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_values_df <- semantic_distances_values_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -1856,10 +2959,166 @@ values_tv_df <- do.call(rbind, values_tv_results)
 values_tv_df$group_nTV <- values_tv_df$TV / sum(values_tv_df$TV)
 
 #add TVs to main dataframe
+#semantic_distances_values_df <- semantic_distances_values_df %>%
+#  left_join(values_tv_df, by = c("concept1", "concept2"))
+
+#add column of normalized TV so they vary from 0 to 1
+#values_tv_df$nTV <- values_tv_df$TV / sum(values_tv_df$TV)
+
+values_tv_df$nTV <- (values_tv_df$TV - min(values_tv_df$TV)) / (max(values_tv_df$TV) - min(values_tv_df$TV))
+
+
+#add TVs to main data frame
 semantic_distances_values_df <- semantic_distances_values_df %>%
   left_join(values_tv_df, by = c("concept1", "concept2"))
 
 
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_values_df$n_mean_entropy <-  semantic_distances_values_df$mean_entropy/sum(semantic_distances_values_df$mean_entropy)
+
+#semantic_distances_values_df$n_mean_entropy <- (semantic_distances_values_df$mean_entropy - min(semantic_distances_values_df$mean_entropy)) / #(max(semantic_distances_values_df$mean_entropy) - min(semantic_distances_values_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_values_df$specificity <- 1 - semantic_distances_values_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_values_df$concept_pair <- paste(semantic_distances_values_df$concept1, semantic_distances_values_df$concept2, sep = "_")
+
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_values_model <- semantic_distances_values_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_values_model <- semantic_distances_values_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_values_model$n_mean_entropy <- (semantic_distances_values_model$mean_entropy - min(semantic_distances_values_model$mean_entropy)) / (max(semantic_distances_values_model$mean_entropy) - min(semantic_distances_values_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_values_model$specificity <- 1 - semantic_distances_values_model$n_mean_entropy
+
+#mean center
+semantic_distances_values_model <- semantic_distances_values_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_values_model <- semantic_distances_values_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_values_model <- semantic_distances_values_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+values_spec_cap_corr <- cor.test(semantic_distances_values_model$specificity, semantic_distances_values_model$max_capacity, method = "pearson")
+
+print(values_spec_cap_corr)
+
+```
+
+```{r}
+
+values_diff_cap_corr <- cor.test(semantic_distances_values_model$nTV, semantic_distances_values_model$max_capacity, method = "pearson")
+
+print(values_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_values_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_values_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_values1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_values_model)
+summary(m_values1)
+car::Anova(m_values1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_values1, type = 3))
+rockchalk::getDeltaRsquare(m_values1)
+```
+
+```{r}
+m_values2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_values_model)
+summary(m_values2)
+```
+
+```{r}
+car::Anova(m_values2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_values2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_values2)
 ```
 
 ```{r}
@@ -1886,45 +3145,48 @@ semantic_distances_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Create an empty list to collect results
+results_list <- vector("list", length = length(qualities_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
 # Loop through each concept pair
 for (pair in qualities_concept_pairs){
   # Loop through each combination of two textures
   for (textures in texture_pairs) {
     texture1 <- as.character(textures[[1]])
     texture2 <- as.character(textures[[2]])
-    
-    # Ensure texture1 is not equal to texture2 (redundant check, but explicit)
+
     if (texture1 != texture2) {
-      # Extract ratings
-    concept1_texture1_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture1, pair[1]]) # X1
-    concept1_texture2_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture2, pair[2]]) # X4
-    concept2_texture1_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture1, pair[2]]) # X2
-    concept2_texture2_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture2, pair[1]]) # X3
-    
-    # Ensure no missing values
+      concept1_texture1_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(qualities_reshaped[qualities_reshaped$texture == texture2, pair[1]])
+
       if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
-                        concept2_texture1_rating, concept1_texture2_rating)))) {
-        
-        # Compute semantic distance
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
         result <- get_semantic_distance(
-          c(concept1_texture1_rating, concept2_texture2_rating),  # (x1, x3)
-          c(concept2_texture1_rating, concept1_texture2_rating)   # (x2, x4)
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
         )
-        
-        # Append result to dataframe
-        semantic_distances_df <- rbind(semantic_distances_df, 
-          data.frame(
-            concept1 = pair[1], 
-            concept2 = pair[2], 
-            texture1 = texture1, 
-            texture2 = texture2, 
-            semantic_distance = result$semantic_distance
-          )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
         )
+        counter <- counter + 1
       }
     }
   }
 }
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
 
 # Add identifier column with all the info
 semantic_distances_qualities_df <- semantic_distances_df %>%
@@ -1950,12 +3212,12 @@ semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
 
 #join to get entropy for concept_1
 semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
-  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  left_join(entropies_df, by = c("concept1" = "concept")) %>%
   rename(entropy_c1 = entropy)
 
 #join to get entropy for concept_2
 semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
-  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  left_join(entropies_df, by = c("concept2" = "concept")) %>%
   rename(entropy_c2 = entropy)
 
 #mean specificity
@@ -2010,10 +3272,166 @@ qualities_tv_df <- do.call(rbind, qualities_tv_results)
 qualities_tv_df$group_nTV <- qualities_tv_df$TV / sum(qualities_tv_df$TV)
 
 #add TVs to main dataframe
+#semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
+#  left_join(qualities_tv_df, by = c("concept1", "concept2"))
+
+#add column of normalized TV so they vary from 0 to 1
+#qualities_tv_df$nTV <- qualities_tv_df$TV / sum(qualities_tv_df$TV)
+
+qualities_tv_df$nTV <- (qualities_tv_df$TV - min(qualities_tv_df$TV)) / (max(qualities_tv_df$TV) - min(qualities_tv_df$TV))
+
+
+#add TVs to main data frame
 semantic_distances_qualities_df <- semantic_distances_qualities_df %>%
   left_join(qualities_tv_df, by = c("concept1", "concept2"))
 
 
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_qualities_df$n_mean_entropy <-  semantic_distances_qualities_df$mean_entropy/sum(semantic_distances_qualities_df$mean_entropy)
+
+#semantic_distances_qualities_df$n_mean_entropy <- (semantic_distances_qualities_df$mean_entropy - min(semantic_distances_qualities_df$mean_entropy)) / #(max(semantic_distances_qualities_df$mean_entropy) - min(semantic_distances_qualities_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_qualities_df$specificity <- 1 - semantic_distances_qualities_df$n_mean_entropy
+
+
+#add concept pair identifiers
+semantic_distances_qualities_df$concept_pair <- paste(semantic_distances_qualities_df$concept1, semantic_distances_qualities_df$concept2, sep = "_")
+
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_qualities_model <- semantic_distances_qualities_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_qualities_model <- semantic_distances_qualities_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_qualities_model$n_mean_entropy <- (semantic_distances_qualities_model$mean_entropy - min(semantic_distances_qualities_model$mean_entropy)) / (max(semantic_distances_qualities_model$mean_entropy) - min(semantic_distances_qualities_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_qualities_model$specificity <- 1 - semantic_distances_qualities_model$n_mean_entropy
+
+#mean center
+semantic_distances_qualities_model <- semantic_distances_qualities_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_qualities_model <- semantic_distances_qualities_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_qualities_model <- semantic_distances_qualities_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+qualities_spec_cap_corr <- cor.test(semantic_distances_qualities_model$specificity, semantic_distances_qualities_model$max_capacity, method = "pearson")
+
+print(qualities_spec_cap_corr)
+
+```
+
+```{r}
+
+qualities_diff_cap_corr <- cor.test(semantic_distances_qualities_model$nTV, semantic_distances_qualities_model$max_capacity, method = "pearson")
+
+print(qualities_diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_qualities_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_qualities_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_qualities1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_qualities_model)
+summary(m_qualities1)
+car::Anova(m_qualities1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_qualities1, type = 3))
+rockchalk::getDeltaRsquare(m_qualities1)
+```
+
+```{r}
+m_qualities2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_qualities_model)
+summary(m_qualities2)
+```
+
+```{r}
+car::Anova(m_qualities2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_qualities2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_qualities2)
 ```
 
 ```{r}
@@ -2168,6 +3586,145 @@ semantic_distances_location_df <- semantic_distances_location_df %>%
   left_join(location_tv_df, by = c("concept1", "concept2"))
 
 
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_fruits_model <- semantic_distances_fruits_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_context_model <- semantic_distances_context_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_fruits_model$n_mean_entropy <- (semantic_distances_fruits_model$mean_entropy - min(semantic_distances_fruits_model$mean_entropy)) / (max(semantic_distances_fruits_model$mean_entropy) - min(semantic_distances_fruits_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_fruits_model$specificity <- 1 - semantic_distances_fruits_model$n_mean_entropy
+
+#mean center
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+spec_cap_corr <- cor.test(semantic_distances_context_model$specificity, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(spec_cap_corr)
+
+```
+
+```{r}
+
+diff_cap_corr <- cor.test(semantic_distances_context_model$nTV, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_context1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_context_model)
+summary(m_context1)
+car::Anova(m_context1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_context1, type = 3))
+rockchalk::getDeltaRsquare(m_context1)
+```
+
+```{r}
+m_context2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_context_model)
+summary(m_context2)
+```
+
+```{r}
+m_context3 <- lm(max_capacity ~ specificity_z, data = semantic_distances_context_model)
+summary(m_context3)
+```
+
+```{r}
+car::Anova(m_context2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_context2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_context2)
 ```
 
 ```{r}
@@ -2325,6 +3882,145 @@ semantic_distances_time_df <- semantic_distances_time_df %>%
 
 ```
 
+#Models
+
+```{r}
+#model data frame
+semantic_distances_fruits_model <- semantic_distances_fruits_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_context_model <- semantic_distances_context_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_fruits_model$n_mean_entropy <- (semantic_distances_fruits_model$mean_entropy - min(semantic_distances_fruits_model$mean_entropy)) / (max(semantic_distances_fruits_model$mean_entropy) - min(semantic_distances_fruits_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_fruits_model$specificity <- 1 - semantic_distances_fruits_model$n_mean_entropy
+
+#mean center
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+spec_cap_corr <- cor.test(semantic_distances_context_model$specificity, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(spec_cap_corr)
+
+```
+
+```{r}
+
+diff_cap_corr <- cor.test(semantic_distances_context_model$nTV, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_context1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_context_model)
+summary(m_context1)
+car::Anova(m_context1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_context1, type = 3))
+rockchalk::getDeltaRsquare(m_context1)
+```
+
+```{r}
+m_context2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_context_model)
+summary(m_context2)
+```
+
+```{r}
+m_context3 <- lm(max_capacity ~ specificity_z, data = semantic_distances_context_model)
+summary(m_context3)
+```
+
+```{r}
+car::Anova(m_context2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_context2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_context2)
+```
+
 ```{r}
 #transport
 transport <- ratings_trials_exp %>% 
@@ -2480,6 +4176,145 @@ semantic_distances_transport_df <- semantic_distances_transport_df %>%
 
 ```
 
+#Models
+
+```{r}
+#model data frame
+semantic_distances_fruits_model <- semantic_distances_fruits_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_context_model <- semantic_distances_context_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_fruits_model$n_mean_entropy <- (semantic_distances_fruits_model$mean_entropy - min(semantic_distances_fruits_model$mean_entropy)) / (max(semantic_distances_fruits_model$mean_entropy) - min(semantic_distances_fruits_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_fruits_model$specificity <- 1 - semantic_distances_fruits_model$n_mean_entropy
+
+#mean center
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_fruits_model <- semantic_distances_fruits_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+spec_cap_corr <- cor.test(semantic_distances_context_model$specificity, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(spec_cap_corr)
+
+```
+
+```{r}
+
+diff_cap_corr <- cor.test(semantic_distances_context_model$nTV, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_context1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_context_model)
+summary(m_context1)
+car::Anova(m_context1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_context1, type = 3))
+rockchalk::getDeltaRsquare(m_context1)
+```
+
+```{r}
+m_context2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_context_model)
+summary(m_context2)
+```
+
+```{r}
+m_context3 <- lm(max_capacity ~ specificity_z, data = semantic_distances_context_model)
+summary(m_context3)
+```
+
+```{r}
+car::Anova(m_context2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_context2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_context2)
+```
+
 ```{r}
 #activity
 activity <- ratings_trials_exp %>% 
@@ -2633,6 +4468,145 @@ semantic_distances_activity_df <- semantic_distances_activity_df %>%
   left_join(activity_tv_df, by = c("concept1", "concept2"))
 
 
+```
+
+#Models
+
+```{r}
+#model data frame
+semantic_distances_activity_model <- semantic_distances_activity_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_context_model <- semantic_distances_context_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_activity_model$n_mean_entropy <- (semantic_distances_activity_model$mean_entropy - min(semantic_distances_activity_model$mean_entropy)) / (max(semantic_distances_activity_model$mean_entropy) - min(semantic_distances_activity_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_activity_model$specificity <- 1 - semantic_distances_activity_model$n_mean_entropy
+
+#mean center
+semantic_distances_activity_model <- semantic_distances_activity_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_activity_model <- semantic_distances_activity_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_activity_model <- semantic_distances_activity_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+spec_cap_corr <- cor.test(semantic_distances_context_model$specificity, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(spec_cap_corr)
+
+```
+
+```{r}
+
+diff_cap_corr <- cor.test(semantic_distances_context_model$nTV, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(diff_cap_corr)
+
+```
+
+#Plotting correlations
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
+
+```{r}
+
+m_context1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_context_model)
+summary(m_context1)
+car::Anova(m_context1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_context1, type = 3))
+rockchalk::getDeltaRsquare(m_context1)
+```
+
+```{r}
+m_context2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_context_model)
+summary(m_context2)
+```
+
+```{r}
+m_context3 <- lm(max_capacity ~ specificity_z, data = semantic_distances_context_model)
+summary(m_context3)
+```
+
+```{r}
+car::Anova(m_context2, type = 3, test = "F")
+```
+
+```{r}
+effectsize::eta_squared(car::Anova(m_context2, type = 3))
+```
+
+```{r}
+rockchalk::getDeltaRsquare(m_context2)
 ```
 
 ```{r}
@@ -2945,7 +4919,6 @@ semantic_distances_abstract_df <- semantic_distances_abstract_df %>%
 
 ```
 
-
 ```{r}
 #add perceptual distances to each semantic distance df
 semantic_distances_animals_df <- merge(semantic_distances_animals_df, percept_distances_df, by = c("texture1", "texture2"), all.x = FALSE, all.y = TRUE)
@@ -3022,22 +4995,365 @@ write.csv(semantic_distances_activity_df, "semantic_distances/activity.csv", row
 #save combined semantic distances data frame
 ```
 
+#Models
+
+```{r}
+#combine to make one data frame for all sets of pairs for different groups
+all_df <- bind_rows(semantic_distances_fruits_df, semantic_distances_veggies_df, semantic_distances_animals_df, semantic_distances_weather_df, semantic_distances_clothes_df, semantic_distances_scenes_df, semantic_distances_emotions_df, semantic_distances_values_df, semantic_distances_qualities_df, semantic_distances_location_df, semantic_distances_time_df, semantic_distances_transport_df, semantic_distances_activity_df)
+```
+
+```{r}
+# #normalize entropy across all pairs
+# all_df$all_n_mean_entropy <-  all_df$mean_entropy/sum(all_df$mean_entropy)
+# 
+# #subtract from 1 for specificity (so larger values are higher specificity)
+# all_df$all_specificity <- 1 - all_df$all_n_mean_entropy
+
+```
+
+# Concepts from Context Matters
+
+```{r}
+#context --- still need to decide
+context <- ratings_trials_exp %>% 
+  filter(concept %in% c("peach", "cherry", "grape", "banana", "apple", "corn", "carrot", "eggplant", "celery", "mushroom", "working", "leisure", "sleeping", "driving", "eating", "efficiency", "speed", "safety", "comfort", "reliability")) %>% 
+  group_by(concept, texture) %>% 
+  summarize(AverageRatings = mean(response), .groups = "drop")
+
+# Generate all concept pairs
+context_concepts <- unique(context$concept)
+context_concept_pairs <- combn(context_concepts, 2, simplify = FALSE) 
+
+context_reshaped <- context %>%
+  spread(key = concept, value = AverageRatings)
+
+# Initialize a dataframe to store results
+semantic_distances_df <- data.frame(
+  concept1 = character(),
+  concept2 = character(),
+  texture1 = character(),
+  texture2 = character(),
+  semantic_distance = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Create an empty list to collect results
+results_list <- vector("list", length = length(context_concept_pairs) * length(texture_pairs))
+counter <- 1  # index for results_list
+
+# Loop through each concept pair
+for (pair in context_concept_pairs){
+  # Loop through each combination of two textures
+  for (textures in texture_pairs) {
+    texture1 <- as.character(textures[[1]])
+    texture2 <- as.character(textures[[2]])
+
+    if (texture1 != texture2) {
+      concept1_texture1_rating <- as.numeric(context_reshaped[context_reshaped$texture == texture1, pair[1]])
+      concept1_texture2_rating <- as.numeric(context_reshaped[context_reshaped$texture == texture2, pair[2]])
+      concept2_texture1_rating <- as.numeric(context_reshaped[context_reshaped$texture == texture1, pair[2]])
+      concept2_texture2_rating <- as.numeric(context_reshaped[context_reshaped$texture == texture2, pair[1]])
+
+      if (all(!is.na(c(concept1_texture1_rating, concept2_texture2_rating, 
+                       concept2_texture1_rating, concept1_texture2_rating)))) {
+
+        result <- get_semantic_distance(
+          c(concept1_texture1_rating, concept2_texture2_rating),
+          c(concept2_texture1_rating, concept1_texture2_rating)
+        )
+
+        # Store result as a list element
+        results_list[[counter]] <- data.frame(
+          concept1 = pair[1],
+          concept2 = pair[2],
+          texture1 = texture1,
+          texture2 = texture2,
+          semantic_distance = result$semantic_distance,
+          stringsAsFactors = FALSE
+        )
+        counter <- counter + 1
+      }
+    }
+  }
+}
+
+# Combine all results into a single data frame
+semantic_distances_df <- do.call(rbind, results_list[1:(counter - 1)])
+
+
+
+
+
+# Add identifier column with all the info
+semantic_distances_context_df <- semantic_distances_df %>%
+  mutate(identifier = paste(concept1, concept2, texture1, texture2, sep = "_"))
+
+#add group name column
+semantic_distances_context_df <- semantic_distances_context_df %>% 
+  mutate(
+    group = "context"
+  )
+
+#max capacity for semantic discriminability for each concept pair
+semantic_distances_context_df <- semantic_distances_context_df %>% 
+  group_by(concept1, concept2) %>% 
+  mutate(
+    max_capacity = max(semantic_distance, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+
+#mean entropy
+
+#add entropy values for each concept to df
+
+#join to get entropy for concept_1
+semantic_distances_context_df <- semantic_distances_context_df %>%
+  left_join(entropies_df, by = c("concept1" = "name")) %>%
+  rename(entropy_c1 = entropy)
+
+#join to get entropy for concept_2
+semantic_distances_context_df <- semantic_distances_context_df %>%
+  left_join(entropies_df, by = c("concept2" = "name")) %>%
+  rename(entropy_c2 = entropy)
+
+#mean specificity
+semantic_distances_context_df <- semantic_distances_context_df %>% 
+  rowwise() %>% 
+  mutate(
+    mean_entropy = mean(c(entropy_c1, entropy_c2), na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#TV
+
+#calc TV for every combination of concept pairs
+#use normalized associations stored in p_mat - subset
+context_p_mat <- p_mat %>% 
+  filter(concept %in% c("peach", "cherry", "grape", "banana", "apple", "corn", "carrot", "eggplant", "celery", "mushroom", "working", "leisure", "sleeping", "driving", "eating", "efficiency", "speed", "safety", "comfort", "reliability"))
+
+#calc TV
+
+# Convert and reassign row names
+context_p_mat_fixed <- as.matrix(context_p_mat[, -1])
+rownames(context_p_mat_fixed) <- context_p_mat$concept
+
+#place to store TVs
+context_tv_results <- list()
+
+# Loop through concept pairs
+for (pair in context_concept_pairs) {
+  concept1 <- pair[1]
+  concept2 <- pair[2]
+  
+  # Get the rows from the matrix
+  p_j1 <- context_p_mat_fixed[concept1, ]
+  p_j2 <- context_p_mat_fixed[concept2, ]
+  
+  # Compute total variation
+  tv <- total_variation(p_j1, p_j2)
+  
+  # Store the result as a list
+  context_tv_results[[length(context_tv_results) + 1]] <- data.frame(
+    concept1 = concept1,
+    concept2 = concept2,
+    TV = tv
+  )
+}
+
+
+#combine into a data frame
+context_tv_df <- do.call(rbind, context_tv_results)
+
+
+#add column of normalized TV so they vary from 0 to 1
+#context_tv_df$nTV <- context_tv_df$TV / sum(context_tv_df$TV)
+
+context_tv_df$nTV <- (context_tv_df$TV - min(context_tv_df$TV)) / (max(context_tv_df$TV) - min(context_tv_df$TV))
+
+
+#add TVs to main data frame
+semantic_distances_context_df <- semantic_distances_context_df %>%
+  left_join(context_tv_df, by = c("concept1", "concept2"))
+
+
+#normalize entropy across pairs to range from 0 to 1
+#semantic_distances_context_df$n_mean_entropy <-  semantic_distances_context_df$mean_entropy/sum(semantic_distances_context_df$mean_entropy)
+
+#semantic_distances_context_df$n_mean_entropy <- (semantic_distances_context_df$mean_entropy - min(semantic_distances_context_df$mean_entropy)) / #(max(semantic_distances_context_df$mean_entropy) - min(semantic_distances_context_df$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+#semantic_distances_context_df$specificity <- 1 - semantic_distances_context_df$n_mean_entropy
+
+
+# #add info about concrete versus abstract concepts
+# #define
+# concrete_concepts <- c("peach", "cherry", "grape", "banana", "apple", "corn", "carrot", "eggplant", "celery", "mushroom")
+# abstract_concepts <- c("working", "leisure", "sleeping", "driving", "eating", "efficiency", "speed", "safety", "comfort", "reliability")
+# 
+# #create the new concreteness column
+# semantic_distances_context_df <- semantic_distances_context_df %>%
+#   mutate(concreteness = case_when(
+#     concept %in% concrete_concepts ~ "concrete",
+#     concept %in% abstract_concepts ~ "abstract",
+#     TRUE ~ NA_character_  # Assign NA to concepts not in either list
+#   ))
+
+#add concept pair identifiers
+semantic_distances_context_df$concept_pair <- paste(semantic_distances_context_df$concept1, semantic_distances_context_df$concept2, sep = "_")
+
+```
 
 #Models
+
+```{r}
+#model data frame
+semantic_distances_context_model <- semantic_distances_context_df %>% 
+  distinct(concept_pair, .keep_all = TRUE)
+
+#semantic_distances_context_model <- semantic_distances_context_model %>% 
+#  select(-n_mean_entropy, -specificity)
+
+semantic_distances_context_model$n_mean_entropy <- (semantic_distances_context_model$mean_entropy - min(semantic_distances_context_model$mean_entropy)) / (max(semantic_distances_context_model$mean_entropy) - min(semantic_distances_context_model$mean_entropy))
+
+#subtract from 1 for specificity (so larger values are higher specificity)
+semantic_distances_context_model$specificity <- 1 - semantic_distances_context_model$n_mean_entropy
+
+#mean center
+semantic_distances_context_model <- semantic_distances_context_model %>% 
+  mutate(
+    nTV_c = nTV - mean(nTV),
+    specificity_c = specificity - mean(specificity)
+  )
+
+#z-score
+semantic_distances_context_model <- semantic_distances_context_model %>% 
+  mutate(
+    nTV_z = scale(nTV),
+    specificity_z = scale(specificity)
+  )
+
+#log transform
+
+semantic_distances_context_model <- semantic_distances_context_model %>% 
+  mutate(
+    log_specificity = log(specificity),
+    log_nTV = log(nTV)
+  )
+
+```
+
+#Correlations
+
+```{r}
+context_spec_cap_corr <- cor.test(semantic_distances_context_model$specificity, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(context_spec_cap_corr)
+
+```
+
+```{r}
+
+context_diff_cap_corr <- cor.test(semantic_distances_context_model$nTV, semantic_distances_context_model$max_capacity, method = "pearson")
+
+print(context_diff_cap_corr)
+
+```
+
+```{r}
+diff_spec_corr <- cor.test(semantic_distances_context_model$nTV, semantic_distances_context_model$specificity, method = "pearson")
+
+print(diff_spec_corr)
+```
+
+#compare correlations
 
 ```{r}
 
 ```
 
+#Plotting correlations
 
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_specificity, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Specificity log(1 - normalized mean entropy)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
 
+```{r}
+ggplot(semantic_distances_context_model, aes(x = log_nTV, y = max_capacity)) +
+  geom_point(color = "skyblue") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_x_continuous(limits = c(-3, 0), expand = c(0,0))+
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  labs(
+    x = "Distribution Difference log(normalized TV)",
+    y = "Max Capacity",
+    title = "Relationship between Specificity and Max Capacity"
+  ) +
+    theme(
+  text = element_text(color = "black", size = 14),
+  #plot.margin = margin(t = 2, r = 1, b = 1, l = 1, unit = "in"),
+  aspect.ratio = 0.5,
+  panel.background = element_blank(),       # Remove panel background
+  plot.background = element_blank(),       # Remove overall plot background
+  panel.spacing = unit(1, "cm"),
+  panel.grid.major = element_blank(),       # Remove major grid lines
+  panel.grid.minor = element_blank(),       # Remove minor grid lines
+  axis.line = element_line(color = "black"), # Add axis lines
+  strip.background = element_blank()
+)
+```
 
+```{r}
 
+m_context1 <- lm(max_capacity ~ specificity_c + nTV_c, data = semantic_distances_context_model)
+summary(m_context1)
+car::Anova(m_context1, type = 3, test = "F")
+effectsize::eta_squared(car::Anova(m_context1, type = 3))
+rockchalk::getDeltaRsquare(m_context1)
+```
 
+```{r}
+m_context2 <- lm(max_capacity ~ specificity_z + nTV_z, data = semantic_distances_context_model)
+summary(m_context2)
+```
 
+```{r}
+m_context3 <- lm(max_capacity ~ specificity_z, data = semantic_distances_context_model)
+summary(m_context3)
+```
 
+```{r}
+car::Anova(m_context2, type = 3, test = "F")
+```
 
+```{r}
+effectsize::eta_squared(car::Anova(m_context2, type = 3))
+```
 
+```{r}
+rockchalk::getDeltaRsquare(m_context2)
+```
 
 ```{r}
 # Function to plot semantic distances and calculate MSE
